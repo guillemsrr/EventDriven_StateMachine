@@ -24,6 +24,7 @@ public:
 private:
 	class UArcherMovement* CharacterMovement;
 	class UArchTrace* Arch;
+	class APrecisionCameraActor* CameraActor;
 
 protected:
 	// Projectile class to spawn.

@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/PlayerController.h"
 #include "ArcherPlayerController.generated.h"
 
 /**
@@ -15,5 +14,18 @@ class ARCHER_API AArcherPlayerController : public APlayerController
 	GENERATED_BODY()
 	AArcherPlayerController();
 
+	class AArcherGameMode* CurrentGameMode;
+	class AArcherCharacter* ArcherCharacter;
+	class AArcherPlayerCameraManager* CameraManager;
+	
+	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
+	
+	void OnPausePressed();
+	void SetPrecisionMode();
+	void SetCharacterMode();
+	
+	void RotateCameraUpDown(float Value);
+	void RotateCameraLeftRight(float Value);
+	
 };

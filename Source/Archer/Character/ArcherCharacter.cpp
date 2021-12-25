@@ -1,4 +1,6 @@
 #include "ArcherCharacter.h"
+
+#include "Archer/Camera/PrecisionCameraActor.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -12,6 +14,9 @@ AArcherCharacter::AArcherCharacter()
 	CharacterMovement->SetMovementComponent(GetMovementComponent());
 	Arch = CreateDefaultSubobject<UArchTrace>(TEXT("ArchTrace"));
 	//ArchTrace->RegisterComponent();
+	CameraActor = CreateDefaultSubobject<APrecisionCameraActor>("Camera");
+	CameraActor->SetActorRelativeLocation(FVector(50, 50, 50));
+	CameraActor->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
 	
 	// set our turn rates for input
 	BaseTurnRate = 45.f;
@@ -30,11 +35,11 @@ AArcherCharacter::AArcherCharacter()
 void AArcherCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	
+
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-	PlayerInputComponent->BindAxis("MoveForward", this, &AArcherCharacter::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &AArcherCharacter::MoveRight);
+	PlayerInputComponent->BindAxis("MoveForward", this, &AArcherCharacter::MoveForward).bConsumeInput = false;
+	PlayerInputComponent->BindAxis("MoveRight", this, &AArcherCharacter::MoveRight).bConsumeInput = false;
 	PlayerInputComponent->BindAction("Aim", IE_Pressed, this, &AArcherCharacter::Aim);
 	PlayerInputComponent->BindAction("Aim", IE_Released, this, &AArcherCharacter::StopAim);
 	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &AArcherCharacter::StartShoot);

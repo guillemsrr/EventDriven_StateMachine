@@ -10,9 +10,21 @@ UCLASS(minimalapi)
 class AArcherGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
+	AArcherGameMode();
 
 public:
-	AArcherGameMode();
+	enum GameplayMode
+	{
+		Character,
+		World,
+		Menu
+	};
+
+	FORCEINLINE GameplayMode GetCurrentGameplayMode() const {return CurrentGameplayMode;}
+	FORCEINLINE void SetCurrentGameplayMode(GameplayMode GameplayMode) {CurrentGameplayMode = GameplayMode;}
+	
+private:
+	GameplayMode CurrentGameplayMode;
 };
 
 

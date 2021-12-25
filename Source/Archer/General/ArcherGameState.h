@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameStateBase.h"
-#include "ArcherGameStateBase.generated.h"
+#include "ArcherGameState.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ARCHER_API AArcherGameStateBase : public AGameStateBase
+class ARCHER_API AArcherGameState : public AGameStateBase
 {
 	GENERATED_BODY()
 	

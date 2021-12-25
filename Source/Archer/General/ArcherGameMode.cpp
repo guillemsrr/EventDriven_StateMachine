@@ -2,6 +2,12 @@
 
 #include "ArcherGameMode.h"
 
+#include "ArcherGameState.h"
+#include "Archer/Player/ArcherPlayerController.h"
+
 AArcherGameMode::AArcherGameMode()
 {
+	PlayerControllerClass = AArcherPlayerController::StaticClass();
+	GameStateClass = AArcherGameState::StaticClass();
+	CurrentGameplayMode = GameplayMode::Character;
 }
