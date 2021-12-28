@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "ArcherPlayerController.h"
 #include "Archer/Camera/ArcherPlayerCameraManager.h"
@@ -16,63 +14,55 @@ AArcherPlayerController::AArcherPlayerController()
 void AArcherPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	CurrentGameMode = static_cast<AArcherGameMode*>(UGameplayStatics::GetGameMode(GetWorld()));
 	ArcherCharacter = static_cast<AArcherCharacter*>(GetCharacter());
 	CameraManager = static_cast<AArcherPlayerCameraManager*>(PlayerCameraManager);
+
+	SetNormalMode();
 }
 
 void AArcherPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
-	InputComponent->BindAction("Pause", IE_Pressed, this, &AArcherPlayerController::OnPausePressed);
-	InputComponent->BindAxis("MoveForward", this, &AArcherPlayerController::RotateCameraUpDown).bConsumeInput = false;
-	InputComponent->BindAxis("MoveRight", this, &AArcherPlayerController::RotateCameraLeftRight).bConsumeInput = false;
+	//TODO -> transfere into Blueprints for the automatic name changing
+	InputComponent->BindAction("Pause", IE_Pressed, this, &AArcherPlayerController::OnSlowModePressed);
 }
 
-void AArcherPlayerController::OnPausePressed()
+void AArcherPlayerController::OnSlowModePressed()
 {
-	if(CurrentGameMode->GetCurrentGameplayMode() == AArcherGameMode::Character)
+	if(CurrentGameMode->GetCurrentGameplayMode() != AArcherGameMode::Orbital)
 	{
-		SetPrecisionMode();
+		SetOrbitalMode();
 	}
-	else if(CurrentGameMode->GetCurrentGameplayMode() == AArcherGameMode::World)
+	else
 	{
-		SetCharacterMode();
+		SetNormalMode();
 	}
 }
 
 void AArcherPlayerController::SetPrecisionMode()
 {
-	CurrentGameMode->SetCurrentGameplayMode(AArcherGameMode::World);
-	ArcherCharacter->DisableInput(this);
-	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.1f);
-	CameraManager->SetPrecisionCamera();
+	CurrentGameMode->SetCurrentGameplayMode(AArcherGameMode::Precision);
+	ArcherCharacter->EnableInput(this);
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.2f);
+	CameraManager->SetPrecisionCameraView();
 }
 
-void AArcherPlayerController::SetCharacterMode()
+void AArcherPlayerController::SetNormalMode()
 {
-	CurrentGameMode->SetCurrentGameplayMode(AArcherGameMode::Character);
+	CurrentGameMode->SetCurrentGameplayMode(AArcherGameMode::Normal);
 	ArcherCharacter->EnableInput(this);
 	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
-	CameraManager->SetOrbitalCamera();
+	CameraManager->SetNormalCameraView();
 }
 
-void AArcherPlayerController::RotateCameraUpDown(float Value)
+void AArcherPlayerController::SetOrbitalMode()
 {
-	if(CurrentGameMode->GetCurrentGameplayMode() != AArcherGameMode::World)
-	{
-		return;
-	}
-
-}
-
-void AArcherPlayerController::RotateCameraLeftRight(float Value)
-{
-	if(CurrentGameMode->GetCurrentGameplayMode() != AArcherGameMode::World)
-	{
-		return;
-	}
-
+	CurrentGameMode->SetCurrentGameplayMode(AArcherGameMode::Orbital);
 	
+	ArcherCharacter->DisableInput(this);
+	//UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.25f);
+	CameraManager->SetOrbitalCameraView();
 }

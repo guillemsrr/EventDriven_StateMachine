@@ -1,8 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "PrecisionCameraActor.h"
-
 #include "ArcherPlayerCameraManager.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -12,5 +8,13 @@ void APrecisionCameraActor::BeginPlay()
 
 	AArcherPlayerCameraManager* CameraManager = static_cast<AArcherPlayerCameraManager*>(
 		UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0));
-	CameraManager->AddOrbitalCameraReference(this);
+	CameraManager->AddPrecisionCameraReference(this);
+}
+
+void APrecisionCameraActor::RotateCameraLeftRight(float Value)
+{
+}
+
+void APrecisionCameraActor::RotateCameraUpDown(float Value)
+{
 }

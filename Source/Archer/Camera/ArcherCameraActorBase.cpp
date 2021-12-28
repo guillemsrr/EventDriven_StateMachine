@@ -3,14 +3,27 @@
 
 #include "ArcherCameraActorBase.h"
 
-#include "Camera/CameraActor.h"
+#include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 
-// Sets default values
 AArcherCameraActorBase::AArcherCameraActorBase()
 {
-	Camera = CreateDefaultSubobject<ACameraActor>("Camera");
-	Camera->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
+	RootComponent = CreateDefaultSubobject<USceneComponent>("Root");
+	Camera = CreateDefaultSubobject<UCameraComponent>("Camera");
+	Camera->SetupAttachment(RootComponent);
 }
 
+void AArcherCameraActorBase::BeginPlay()
+{
+	Super::BeginPlay();
+	//no funciona
+	//Camera->CustomTimeDilation = GetWorld()->GetDeltaSeconds();
+
+	SetupPlayerInputComponent();
+}
+
+void AArcherCameraActorBase::SetupPlayerInputComponent()
+{
+	EnableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+}

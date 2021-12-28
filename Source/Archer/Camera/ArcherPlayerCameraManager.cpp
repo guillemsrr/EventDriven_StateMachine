@@ -6,7 +6,7 @@
 AArcherPlayerCameraManager::AArcherPlayerCameraManager()
 {
 	TransitionParams.BlendTime = 1.f;
-	TransitionParams.BlendFunction = EViewTargetBlendFunction::VTBlend_EaseOut;
+	TransitionParams.BlendFunction = EViewTargetBlendFunction::VTBlend_EaseInOut;
 	TransitionParams.BlendExp = 1.f;
 	TransitionParams.bLockOutgoing = false;
 }
@@ -15,15 +15,41 @@ void AArcherPlayerCameraManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	StartCameraFade(0.f, 1.f, 1.f, FLinearColor::Black);
+	StartCameraFade(1.f, 0.f, 1.f, FLinearColor::Black);
 }
 
-void AArcherPlayerCameraManager::SetPrecisionCamera()
+void AArcherPlayerCameraManager::SetCurrentCamera(AArcherCameraActorBase* Camera)
 {
-	SetViewTarget(PrecisionCamera, TransitionParams);
+	CurrentCamera = Camera;
+	SetViewTarget(Camera, TransitionParams);
 }
 
-void AArcherPlayerCameraManager::SetOrbitalCamera()
+void AArcherPlayerCameraManager::SetPrecisionCameraView()
 {
-	SetViewTarget(OrbitalCamera, TransitionParams);
+	DisableCurrentCameraInput();
+	SetCurrentCamera(PrecisionCamera);
+	EnableCurrentCameraInput();
+}
+
+void AArcherPlayerCameraManager::SetOrbitalCameraView()
+{
+	DisableCurrentCameraInput();
+	SetCurrentCamera(OrbitalCamera);
+	EnableCurrentCameraInput();
+}
+
+void AArcherPlayerCameraManager::SetNormalCameraView()
+{
+	DisableCurrentCameraInput();
+	SetCurrentCamera(OrbitalCamera);
+}
+
+void AArcherPlayerCameraManager::EnableCurrentCameraInput()
+{
+	CurrentCamera->EnableInput(GetOwningPlayerController());
+}
+
+void AArcherPlayerCameraManager::DisableCurrentCameraInput()
+{
+	CurrentCamera->DisableInput(GetOwningPlayerController());
 }

@@ -15,8 +15,9 @@ class AArcherGameMode : public AGameModeBase
 public:
 	enum GameplayMode
 	{
-		Character,
-		World,
+		Normal,
+		Orbital,
+		Precision,
 		Menu
 	};
 

@@ -11,5 +11,16 @@ class ARCHER_API AOrbitalCameraActor : public AArcherCameraActorBase
 
 	AOrbitalCameraActor();
 
+protected:
+	UPROPERTY(EditDefaultsOnly)
+	float RotationSpeed = 1.f;
+	
 	virtual void BeginPlay() override;
+	virtual void RotateCameraLeftRight(float Value) override;
+	virtual void RotateCameraUpDown(float Value) override;
+	virtual void SetupPlayerInputComponent() override;
+	void CorrectRollRotation();
+
+private:
+	void LookAtRoot();
 };

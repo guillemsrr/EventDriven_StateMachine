@@ -11,5 +11,9 @@ class ARCHER_API APrecisionCameraActor : public AArcherCameraActorBase
 {
 	GENERATED_BODY()
 
+protected:
 	virtual void BeginPlay() override;
+	virtual void RotateCameraLeftRight(float Value) override;
+	virtual void RotateCameraUpDown(float Value) override;
+	
 };

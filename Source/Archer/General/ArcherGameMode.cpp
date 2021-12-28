@@ -9,5 +9,4 @@ AArcherGameMode::AArcherGameMode()
 {
 	PlayerControllerClass = AArcherPlayerController::StaticClass();
 	GameStateClass = AArcherGameState::StaticClass();
-	CurrentGameplayMode = GameplayMode::Character;
 }
