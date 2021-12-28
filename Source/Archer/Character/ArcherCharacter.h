@@ -14,23 +14,16 @@ class AArcherCharacter : public ACharacterBase
 
 public:
 	AArcherCharacter();
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
-	float BaseTurnRate;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
-	float BaseLookUpRate;
 
 private:
 	class UArcherMovement* CharacterMovement;
 	class UArchTrace* Arch;
-	class APrecisionCameraActor* CameraActor;
 
 protected:
-	// Projectile class to spawn.
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class AProjectile> ProjectileClass;
 	
+	virtual void BeginPlay() override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:

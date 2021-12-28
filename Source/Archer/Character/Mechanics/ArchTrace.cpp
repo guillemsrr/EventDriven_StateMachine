@@ -10,11 +10,21 @@ UArchTrace::UArchTrace()
 	SetComponentTickEnabled(true);
 }
 
+void UArchTrace::InitializeComponent()
+{
+	Super::InitializeComponent();
+	InitializeCollisionTypes();
+	Owner = GetOwner();
+	GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Yellow, TEXT("InitializeComponent ARCHTRACE"));
+
+}
+
 void UArchTrace::BeginPlay()
 {
 	Super::BeginPlay();
 	InitializeCollisionTypes();
 	Owner = GetOwner();
+	GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Yellow, TEXT("BeginPlay ARCHTRACE"));
 }
 
 void UArchTrace::InitializeCollisionTypes()

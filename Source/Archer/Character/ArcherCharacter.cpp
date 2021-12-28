@@ -1,6 +1,7 @@
 #include "ArcherCharacter.h"
 
 #include "Archer/Camera/PrecisionCameraActor.h"
+#include "AVEncoder/Public/Microsoft/AVEncoderIMFSampleWrapper.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -14,14 +15,7 @@ AArcherCharacter::AArcherCharacter()
 	CharacterMovement->SetMovementComponent(GetMovementComponent());
 	Arch = CreateDefaultSubobject<UArchTrace>(TEXT("ArchTrace"));
 	//ArchTrace->RegisterComponent();
-	CameraActor = CreateDefaultSubobject<APrecisionCameraActor>("Camera");
-	CameraActor->SetActorRelativeLocation(FVector(50, 50, 50));
-	CameraActor->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
 	
-	// set our turn rates for input
-	BaseTurnRate = 45.f;
-	BaseLookUpRate = 45.f;
-
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -31,6 +25,19 @@ AArcherCharacter::AArcherCharacter()
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f);
 	GetCharacterMovement()->JumpZVelocity = 1000.f;
 }
+
+void AArcherCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+
+	//Arch->InitializeComponent();
+	//CharacterMovement->InitializeComponent();
+	
+	APrecisionCameraActor* Camera = GetWorld()->SpawnActor<APrecisionCameraActor>(APrecisionCameraActor::StaticClass(), GetActorLocation() + FVector(20, 0, 0), GetActorRotation());
+	Camera->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+}
+
 
 void AArcherCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {

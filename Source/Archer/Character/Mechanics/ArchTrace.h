@@ -11,10 +11,11 @@ public:
 	void Aim();
 	void Shoot(TSubclassOf<class AProjectile> Projectile);
 	void StopAiming();
+	virtual void InitializeComponent() override;
 
 protected:
-	void BeginPlay() override;
-	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void BeginPlay() override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	// Gun muzzle offset from the camera location.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)

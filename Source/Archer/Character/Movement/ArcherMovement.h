@@ -9,12 +9,15 @@ class ARCHER_API UArcherMovement : public UActorComponent
 
 public:
 	UArcherMovement();
-	
+
+	virtual void BeginPlay() override;
+	virtual void InitializeComponent() override;
 	void MoveForward(float Value) const;
 	void MoveRight(float Value) const;
 
 	void SetMovementComponent(UPawnMovementComponent* MovementComponent);
 
 private:
+	class APlayerCameraManager* CameraManager;
 	class UPawnMovementComponent* MovementComponent;
 };
