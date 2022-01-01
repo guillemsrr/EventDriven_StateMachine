@@ -1,7 +1,7 @@
 #include "ArcherCharacter.h"
 
 #include "Archer/Camera/PrecisionCameraActor.h"
-#include "AVEncoder/Public/Microsoft/AVEncoderIMFSampleWrapper.h"
+#include "Archer/TimeManagement/SlowTimeManager.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -26,18 +26,36 @@ AArcherCharacter::AArcherCharacter()
 	GetCharacterMovement()->JumpZVelocity = 1000.f;
 }
 
+void AArcherCharacter::Initialize(USlowTimeManager* TimeManager)
+{
+	TimeManager->AddFreeTicker(this);
+	Arch->Initialize(TimeManager);
+}
+
+void AArcherCharacter::DisableMovement()
+{
+	CharacterMovement->DisableMovement();
+}
+
+void AArcherCharacter::EnableMovement()
+{
+	CharacterMovement->EnableMovement();
+}
+
 void AArcherCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-
-	//Arch->InitializeComponent();
-	//CharacterMovement->InitializeComponent();
 	
 	APrecisionCameraActor* Camera = GetWorld()->SpawnActor<APrecisionCameraActor>(APrecisionCameraActor::StaticClass(), GetActorLocation() + FVector(20, 0, 0), GetActorRotation());
 	Camera->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
 }
 
+void AArcherCharacter::TickActor(float DeltaTime, ELevelTick Tick, FActorTickFunction& ThisTickFunction)
+{
+	Super::TickActor(DeltaTime, Tick, ThisTickFunction);
+
+	Arch->Tick();
+}
 
 void AArcherCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {

@@ -6,23 +6,14 @@
 
 UArcherMovement::UArcherMovement()
 {
-	UE_LOG(LogTemp, Warning, TEXT("constructor"));
+	//UE_LOG(LogTemp, Warning, TEXT("constructor"));
 }
 
 void UArcherMovement::BeginPlay()
 {
 	Super::InitializeComponent();
 
-	UE_LOG(LogTemp, Warning, TEXT("InitializeComponent"));
-	GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Yellow, TEXT("InitializeComponent"));
-	CameraManager = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
-}
-
-void UArcherMovement::InitializeComponent()
-{
-	Super::InitializeComponent();
-
-	UE_LOG(LogTemp, Warning, TEXT("InitializeComponent"));
+	//UE_LOG(LogTemp, Warning, TEXT("BeginPlay"));
 	GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Yellow, TEXT("InitializeComponent"));
 	CameraManager = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
 }
@@ -30,20 +21,27 @@ void UArcherMovement::InitializeComponent()
 
 void UArcherMovement::MoveForward(float Value) const
 {
+	if(!IsMovementEnabled) return;
+	
 	const FVector ForwardVector = CameraManager->GetActorForwardVector();
 	const FVector UpVector = CameraManager->GetActorUpVector();
-	const FVector ProjectedForward = UKismetMathLibrary::ProjectVectorOnToPlane(ForwardVector, UpVector);
+	FVector ProjectedVector = UKismetMathLibrary::ProjectVectorOnToPlane(ForwardVector, FVector::UpVector);
+	ProjectedVector.Normalize();
+
 	
-	MovementComponent->AddInputVector(ProjectedForward * Value);
+	MovementComponent->AddInputVector(ProjectedVector * Value);
 }
 
 void UArcherMovement::MoveRight(float Value) const
 {
-	const FVector rightVector = CameraManager->GetActorRightVector();
-	const FVector upVector = CameraManager->GetActorUpVector();
-	const FVector projectedForward = UKismetMathLibrary::ProjectVectorOnToPlane(rightVector, upVector);
+	if(!IsMovementEnabled) return;
+
+	const FVector RightVector = CameraManager->GetActorRightVector();
+	const FVector UpVector = CameraManager->GetActorUpVector();
+	FVector ProjectedVector = UKismetMathLibrary::ProjectVectorOnToPlane(RightVector, FVector::UpVector);
+	ProjectedVector.Normalize();
 	
-	MovementComponent->AddInputVector(projectedForward * Value);
+	MovementComponent->AddInputVector(ProjectedVector * Value);
 
 }
 

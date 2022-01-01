@@ -20,12 +20,16 @@ public:
 		Precision,
 		Menu
 	};
+	
+	GameplayMode CurrentGameplayMode;
 
 	FORCEINLINE GameplayMode GetCurrentGameplayMode() const {return CurrentGameplayMode;}
 	FORCEINLINE void SetCurrentGameplayMode(GameplayMode GameplayMode) {CurrentGameplayMode = GameplayMode;}
-	
-private:
-	GameplayMode CurrentGameplayMode;
+
+protected:
+	void BeforeStartPlay();
+	virtual void StartPlay() override;
+	void AfterStartPlay();
 };
 
 

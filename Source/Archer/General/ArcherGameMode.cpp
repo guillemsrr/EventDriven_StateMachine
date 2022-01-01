@@ -4,9 +4,28 @@
 
 #include "ArcherGameState.h"
 #include "Archer/Player/ArcherPlayerController.h"
+#include "Kismet/GameplayStatics.h"
 
 AArcherGameMode::AArcherGameMode()
 {
 	PlayerControllerClass = AArcherPlayerController::StaticClass();
 	GameStateClass = AArcherGameState::StaticClass();
+}
+
+void AArcherGameMode::StartPlay()
+{
+	BeforeStartPlay();
+	Super::StartPlay();
+	AfterStartPlay();
+}
+
+void AArcherGameMode::BeforeStartPlay()
+{
+}
+
+void AArcherGameMode::AfterStartPlay()
+{
+	AArcherPlayerController* PlayerController = Cast<AArcherPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+
+	PlayerController->Initialize();
 }

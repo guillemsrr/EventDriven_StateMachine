@@ -1,10 +1,12 @@
 ﻿#include "ArchTrace.h"
 
 #include "DrawDebugHelpers.h"
+#include "Archer/TimeManagement/SlowTimeManager.h"
 #include "Kismet/GameplayStatics.h"
 
 UArchTrace::UArchTrace()
 {
+	PrimaryComponentTick.TickInterval = 0.01;
 	PrimaryComponentTick.bCanEverTick = true;
 	bAutoActivate = true;
 	SetComponentTickEnabled(true);
@@ -16,7 +18,18 @@ void UArchTrace::InitializeComponent()
 	InitializeCollisionTypes();
 	Owner = GetOwner();
 	GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Yellow, TEXT("InitializeComponent ARCHTRACE"));
+}
 
+void UArchTrace::Initialize(USlowTimeManager* TimeManager)
+{
+	TimeManager->AddFreeTicker(this);
+}
+
+void UArchTrace::Tick()
+{
+	if(!IsAiming) return;
+
+	LineTraceObjects();
 }
 
 void UArchTrace::BeginPlay()
@@ -84,26 +97,9 @@ void UArchTrace::Shoot(TSubclassOf<class AProjectile> ProjectileTemplate)
 	}
 }
 
-void UArchTrace::StartLineTraceTimer()
-{
-	GetOwner()->GetWorldTimerManager().SetTimer(
-		AimTimerHandle,
-		this,
-		&UArchTrace::LineTraceCoroutine,
-		0.1f);
-}
-
 void UArchTrace::StopAiming()
 {
 	IsAiming = false;
-}
-
-void UArchTrace::TickComponent(float DeltaTime, ELevelTick Tick, FActorComponentTickFunction* ThisTickFunction)
-{
-	if(IsAiming)
-	{
-		LineTraceCoroutine();
-	}
 }
 
 void UArchTrace::LineTraceObjects()
@@ -159,12 +155,4 @@ FHitResult UArchTrace::LineTraceFromStartToEnd(FVector start, FVector end) const
 	}
 
 	return hitResult;
-}
-
-void UArchTrace::LineTraceCoroutine()
-{
-	if(!IsAiming) return;
-
-	LineTraceObjects();
-	StartLineTraceTimer();
 }

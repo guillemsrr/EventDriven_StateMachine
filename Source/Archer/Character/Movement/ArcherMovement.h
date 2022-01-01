@@ -11,13 +11,16 @@ public:
 	UArcherMovement();
 
 	virtual void BeginPlay() override;
-	virtual void InitializeComponent() override;
 	void MoveForward(float Value) const;
 	void MoveRight(float Value) const;
 
 	void SetMovementComponent(UPawnMovementComponent* MovementComponent);
+	FORCEINLINE void DisableMovement(){IsMovementEnabled = false;}
+	FORCEINLINE void EnableMovement(){IsMovementEnabled = true;}
 
 private:
 	class APlayerCameraManager* CameraManager;
 	class UPawnMovementComponent* MovementComponent;
+
+	bool IsMovementEnabled;
 };
