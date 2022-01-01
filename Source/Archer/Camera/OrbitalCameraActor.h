@@ -14,7 +14,7 @@ class ARCHER_API AOrbitalCameraActor : public AArcherCameraActorBase
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	float RotationSpeed = 1.f;
-	
+
 	virtual void BeginPlay() override;
 	virtual void RotateCameraLeftRight(float Value) override;
 	virtual void RotateCameraUpDown(float Value) override;

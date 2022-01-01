@@ -12,6 +12,12 @@ AArcherCameraActorBase::AArcherCameraActorBase()
 	RootComponent = CreateDefaultSubobject<USceneComponent>("Root");
 	Camera = CreateDefaultSubobject<UCameraComponent>("Camera");
 	Camera->SetupAttachment(RootComponent);
+
+	float t = GetActorTickInterval();
+	SetActorTickInterval(t);
+	
+	//UE_LOG(LogTemp, Warning, TEXT("float: %f"), t);
+	
 }
 
 void AArcherCameraActorBase::BeginPlay()

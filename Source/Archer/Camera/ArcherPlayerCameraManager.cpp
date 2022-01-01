@@ -3,6 +3,10 @@
 
 #include "ArcherPlayerCameraManager.h"
 
+#include "ArcherCameraActorBase.h"
+#include "Archer/General/ArcherGameMode.h"
+#include "Archer/TimeManagement/SlowTimeManager.h"
+
 AArcherPlayerCameraManager::AArcherPlayerCameraManager()
 {
 	TransitionParams.BlendTime = 1.f;
@@ -52,4 +56,10 @@ void AArcherPlayerCameraManager::EnableCurrentCameraInput()
 void AArcherPlayerCameraManager::DisableCurrentCameraInput()
 {
 	CurrentCamera->DisableInput(GetOwningPlayerController());
+}
+
+void AArcherPlayerCameraManager::Initialize(USlowTimeManager* TimeManager)
+{
+	TimeManager->AddFreeTicker(OrbitalCamera);
+	TimeManager->AddFreeTicker(PrecisionCamera);
 }

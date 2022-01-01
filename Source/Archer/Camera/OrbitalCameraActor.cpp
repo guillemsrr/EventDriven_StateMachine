@@ -14,12 +14,12 @@ void AOrbitalCameraActor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AArcherPlayerCameraManager* CameraManager = static_cast<AArcherPlayerCameraManager*>(
+	AArcherPlayerCameraManager* CameraManager = Cast<AArcherPlayerCameraManager>(
 		UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0));
 	CameraManager->AddOrbitalCameraReference(this);
 	CameraManager->SetViewTarget(this);
 	CameraManager->SetCurrentCamera(this);
-
+	
 	Camera->SetRelativeLocation(FVector(-1500, 0, 1500));
 	LookAtRoot();
 }
@@ -27,7 +27,7 @@ void AOrbitalCameraActor::BeginPlay()
 void AOrbitalCameraActor::LookAtRoot()
 {
 	FVector RootDirection = -Camera->GetRelativeLocation();
-	RootDirection.Normalize(0.1f);
+	RootDirection.Normalize();
 	Camera->SetRelativeRotation(RootDirection.Rotation());
 }
 
@@ -56,19 +56,16 @@ void AOrbitalCameraActor::RotateCameraUpDown(float Value)
 	const FVector ForwardVector = Camera->GetForwardVector();
 	const FVector UpVector =  Camera->GetUpVector();
 	FVector ProjectedForward = UKismetMathLibrary::ProjectVectorOnToPlane(ForwardVector, UpVector);
-	ProjectedForward.Normalize(0.1f);
+	ProjectedForward.Normalize();
 	
 	FVector RotationVector = GetActorRotation().Vector();
 	RotationVector += ProjectedForward/100.f*Value * RotationSpeed;
-	//SetActorRotation(RotationVector.Rotation());
-	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Cyan, GetActorRotation().ToString());
 
 	FRotator Rotation = GetActorRotation();
 	Rotation.Pitch -= Value * RotationSpeed;
 	SetActorRelativeRotation(Rotation);
-
+	CorrectRollRotation();
 	//LookAtRoot();
-	//CorrectRollRotation();
 }
 
 void AOrbitalCameraActor::RotateCameraLeftRight(float Value)
@@ -82,6 +79,6 @@ void AOrbitalCameraActor::RotateCameraLeftRight(float Value)
 	Rotation.Yaw -= Value * RotationSpeed;
 	SetActorRelativeRotation(Rotation);
 
+	CorrectRollRotation();
 	//LookAtRoot();
-	//CorrectRollRotation();
 }

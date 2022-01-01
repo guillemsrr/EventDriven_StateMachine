@@ -2,11 +2,12 @@
 #include "ArcherPlayerCameraManager.h"
 #include "Kismet/GameplayStatics.h"
 
+
 void APrecisionCameraActor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AArcherPlayerCameraManager* CameraManager = static_cast<AArcherPlayerCameraManager*>(
+	AArcherPlayerCameraManager* CameraManager = Cast<AArcherPlayerCameraManager>(
 		UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0));
 	CameraManager->AddPrecisionCameraReference(this);
 }
