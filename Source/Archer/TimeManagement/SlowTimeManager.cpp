@@ -2,7 +2,6 @@
 
 
 #include "SlowTimeManager.h"
-
 #include "GameFramework/Actor.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -22,11 +21,15 @@ void USlowTimeManager::SetGlobalTimeDilation()
 	{
 		return;
 	}
+
+	if(TimeFreeActors[0] == nullptr) return;
+	if(TimeFreeActors[0]->GetWorld() == nullptr) return;
+	
 	UGameplayStatics::SetGlobalTimeDilation(TimeFreeActors[0], 1.f);
 
 	for (AActor* Actor : TimeFreeActors)
 	{
-		Actor->CustomTimeDilation = 1.f;
+		//Actor->CustomTimeDilation = 1.f;
 	}
 
 	for (UActorComponent* ActorComponent : TimeFreeActorComponents)
@@ -37,9 +40,13 @@ void USlowTimeManager::SetGlobalTimeDilation()
 
 void USlowTimeManager::SetSlowModeTimeDilation()
 {
-	float Delta = TimeFreeActors[0]->GetWorld()->GetDeltaSeconds();
+	if(TimeFreeActors[0] == nullptr) return;
+	if(TimeFreeActors[0]->GetWorld() == nullptr) return;
 	
-	UGameplayStatics::SetGlobalTimeDilation(TimeFreeActors[0], 0.2f);
+	//float Delta = TimeFreeActors[0]->GetWorld()->GetDeltaSeconds();
+	
+	//UGameplayStatics::SetGlobalTimeDilation(TimeFreeActors[0], 0.2f);
+	UGameplayStatics::SetGlobalTimeDilation(TimeFreeActors[0], 0.1f);
 
 	for (AActor* Actor : TimeFreeActors)
 	{
