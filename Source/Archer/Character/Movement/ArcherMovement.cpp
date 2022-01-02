@@ -24,7 +24,6 @@ void UArcherMovement::MoveForward(float Value) const
 	if(!IsMovementEnabled) return;
 	
 	const FVector ForwardVector = CameraManager->GetActorForwardVector();
-	const FVector UpVector = CameraManager->GetActorUpVector();
 	FVector ProjectedVector = UKismetMathLibrary::ProjectVectorOnToPlane(ForwardVector, FVector::UpVector);
 	ProjectedVector.Normalize();
 
@@ -37,7 +36,6 @@ void UArcherMovement::MoveRight(float Value) const
 	if(!IsMovementEnabled) return;
 
 	const FVector RightVector = CameraManager->GetActorRightVector();
-	const FVector UpVector = CameraManager->GetActorUpVector();
 	FVector ProjectedVector = UKismetMathLibrary::ProjectVectorOnToPlane(RightVector, FVector::UpVector);
 	ProjectedVector.Normalize();
 	
