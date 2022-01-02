@@ -13,10 +13,13 @@ public:
 	UArchTrace();
 	void Aim();
 	void Shoot(TSubclassOf<class AProjectile> Projectile);
+	void GetMouseLocationAndDirection(FVector& worldLocation, FVector& worldDirection);
 	void StopAiming();
 	virtual void InitializeComponent() override;
 	void Initialize(USlowTimeManager* TimeManager);
 	void Tick();
+	void StartAutoAim();
+	void StopAutoAim();
 
 protected:
 	virtual void BeginPlay() override;
@@ -29,6 +32,7 @@ private:
 	FCollisionObjectQueryParams CollisionObjectQueryParams;
 	FCollisionQueryParams CollisionQueryParams;
 	bool IsAiming;
+	bool IsAutoAiming;
 	FVector AimDirection;
 
 	UPROPERTY()
@@ -36,6 +40,8 @@ private:
 
 	FHitResult LineTraceFromStartToEnd(FVector start, FVector end) const;
 	void InitializeCollisionTypes();
-	void LineTraceObjects();
+	void FreeAim();
+	void AutoAim();
 	FTimerHandle AimTimerHandle;
+	TArray<AActor*> AutoAimTargets;
 };

@@ -69,6 +69,8 @@ void AArcherCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerIn
 	PlayerInputComponent->BindAction("Aim", IE_Released, this, &AArcherCharacter::StopAim);
 	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &AArcherCharacter::StartShoot);
 	PlayerInputComponent->BindAction("Shoot", IE_Released, this, &AArcherCharacter::ReleaseShoot);
+	PlayerInputComponent->BindAction("AutoAim", IE_Pressed, this, &AArcherCharacter::AutoAimPressed);
+	PlayerInputComponent->BindAction("AutoAim", IE_Released, this, &AArcherCharacter::AutoAimReleased);
 }
 
 void AArcherCharacter::MoveForward(const float Value)
@@ -99,5 +101,15 @@ void AArcherCharacter::StartShoot()
 void AArcherCharacter::ReleaseShoot()
 {
 	//Arch->Shoot();
+}
+
+void AArcherCharacter::AutoAimPressed()
+{
+	Arch->StartAutoAim();
+}
+
+void AArcherCharacter::AutoAimReleased()
+{
+	Arch->StopAutoAim();
 }
 

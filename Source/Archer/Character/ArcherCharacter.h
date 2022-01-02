@@ -36,4 +36,6 @@ private:
 	void StopAim();
 	void StartShoot();
 	void ReleaseShoot();
+	void AutoAimPressed();
+	void AutoAimReleased();
 };
