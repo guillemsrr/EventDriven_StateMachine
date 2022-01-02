@@ -6,7 +6,7 @@
 #include "GameFramework/Character.h"
 #include "CharacterBase.generated.h"
 
-UCLASS()
+UCLASS(Abstract)
 class ARCHER_API ACharacterBase : public ACharacter
 {
 	GENERATED_BODY()
@@ -31,8 +31,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsAlive() const;
 
-	UFUNCTION()
-	void Hit();
+	virtual void Hit();
 
 private:
 	const int MAX_HEALTH = 1;
