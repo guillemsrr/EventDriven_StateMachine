@@ -21,6 +21,7 @@ void AArcherGameMode::StartPlay()
 
 void AArcherGameMode::BeforeStartPlay()
 {
+	GetWorld()->bIsCameraMoveableWhenPaused = true; // Fixes TXAA/MotionBlur glitches.
 }
 
 void AArcherGameMode::AfterStartPlay()

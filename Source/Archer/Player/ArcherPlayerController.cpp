@@ -12,16 +12,18 @@ AArcherPlayerController::AArcherPlayerController()
 	PlayerCameraManagerClass = AArcherPlayerCameraManager::StaticClass();
 	bShowMouseCursor = true;
 	SlowTimeManager = NewObject<USlowTimeManager>();
+	bShouldPerformFullTickWhenPaused = true;
 }
 
 void AArcherPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	CurrentGameMode = static_cast<AArcherGameMode*>(UGameplayStatics::GetGameMode(GetWorld()));
-	ArcherCharacter = static_cast<AArcherCharacter*>(GetCharacter());
-	CameraManager = static_cast<AArcherPlayerCameraManager*>(PlayerCameraManager);
+	CurrentGameMode = Cast<AArcherGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	ArcherCharacter = Cast<AArcherCharacter>(GetCharacter());
+	CameraManager = Cast<AArcherPlayerCameraManager>(PlayerCameraManager);
 
+	if(!ArcherCharacter) return;
 	SetNormalMode();
 }
 
@@ -30,7 +32,8 @@ void AArcherPlayerController::SetupInputComponent()
 	Super::SetupInputComponent();
 
 	//TODO -> transfer into Blueprints for the automatic name changing
-	InputComponent->BindAction("Pause", IE_Pressed, this, &AArcherPlayerController::OnSlowModePressed);
+	InputComponent->BindAction("Pause", IE_Pressed, this, &AArcherPlayerController::OnPausePressed);
+	InputComponent->BindAction("OrbitMode", IE_Pressed, this, &AArcherPlayerController::OnSlowModePressed);
 }
 
 void AArcherPlayerController::InitInputSystem()
@@ -55,6 +58,22 @@ void AArcherPlayerController::OnSlowModePressed()
 	{
 		SetNormalMode();
 	}
+}
+
+void AArcherPlayerController::OnPausePressed()
+{
+	if(IsPaused)
+	{
+		UGameplayStatics::SetGlobalTimeDilation(ArcherCharacter, 1.f);
+		CameraManager->SetOrbitalCameraView();
+	}
+	else
+	{
+		UGameplayStatics::SetGlobalTimeDilation(ArcherCharacter, 0.0f);
+		CameraManager->SetNormalCameraView();
+	}
+
+	IsPaused = !IsPaused;
 }
 
 void AArcherPlayerController::SetPrecisionMode()

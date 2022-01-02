@@ -12,20 +12,16 @@ AArcherCameraActorBase::AArcherCameraActorBase()
 	RootComponent = CreateDefaultSubobject<USceneComponent>("Root");
 	Camera = CreateDefaultSubobject<UCameraComponent>("Camera");
 	Camera->SetupAttachment(RootComponent);
-
-	float t = GetActorTickInterval();
-	SetActorTickInterval(t);
 	
+	PrimaryActorTick.bTickEvenWhenPaused = true;
 	//UE_LOG(LogTemp, Warning, TEXT("float: %f"), t);
-	
 }
 
 void AArcherCameraActorBase::BeginPlay()
 {
 	Super::BeginPlay();
-	//no funciona
-	//Camera->CustomTimeDilation = GetWorld()->GetDeltaSeconds();
-
+	
+	GetWorld()->bIsCameraMoveableWhenPaused = true;
 	SetupPlayerInputComponent();
 }
 

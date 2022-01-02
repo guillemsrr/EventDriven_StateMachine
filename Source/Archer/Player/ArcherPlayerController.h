@@ -17,14 +17,16 @@ class ARCHER_API AArcherPlayerController : public APlayerController
 	AArcherGameMode* CurrentGameMode;
 	AArcherCharacter* ArcherCharacter;
 	AArcherPlayerCameraManager* CameraManager;
-	UPROPERTY()
 	USlowTimeManager* SlowTimeManager;
+
+	bool IsPaused;
 	
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
 	virtual void InitInputSystem() override;
 	
 	void OnSlowModePressed();
+	void OnPausePressed();
 	void SetPrecisionMode();
 	void SetNormalMode();
 	void SetOrbitalMode();
