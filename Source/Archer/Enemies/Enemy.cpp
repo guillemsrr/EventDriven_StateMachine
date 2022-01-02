@@ -3,6 +3,8 @@
 
 #include "Enemy.h"
 
+#include "Components/CapsuleComponent.h"
+
 
 // Sets default values
 AEnemy::AEnemy()
@@ -21,14 +23,35 @@ void AEnemy::BeginPlay()
 }
 
 // Called every frame
+
 void AEnemy::Tick(float DeltaTime)
 {
+	if(!IsAlive())return;
+	
 	Super::Tick(DeltaTime);
+
 }
 
 // Called to bind functionality to input
+
 void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
+
+void AEnemy::Hit()
+{
+	Super::Hit();
+
+	if(!IsAlive())
+	{
+		Die();
+	}
+}
+
+void AEnemy::Die()
+{
+	GetCapsuleComponent()->SetGenerateOverlapEvents(false);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 }
 
