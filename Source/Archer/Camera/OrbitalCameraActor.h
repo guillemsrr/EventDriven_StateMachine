@@ -15,6 +15,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	float RotationSpeed = 1.f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Zoom = 100.f;
+	
 	virtual void BeginPlay() override;
 	virtual void RotateCameraLeftRight(float Value) override;
 	virtual void RotateCameraUpDown(float Value) override;

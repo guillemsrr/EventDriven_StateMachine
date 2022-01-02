@@ -20,7 +20,7 @@ void AOrbitalCameraActor::BeginPlay()
 	CameraManager->SetViewTarget(this);
 	CameraManager->SetCurrentCamera(this);
 	
-	Camera->SetRelativeLocation(FVector(-1500, 0, 1500));
+	Camera->SetRelativeLocation(FVector(-15*Zoom, 0, 15*Zoom));
 	LookAtRoot();
 }
 
