@@ -3,8 +3,6 @@
 
 #include "CharacterBase.h"
 
-#include "Components/CapsuleComponent.h"
-
 // Sets default values
 ACharacterBase::ACharacterBase()
 {
@@ -27,13 +25,6 @@ void ACharacterBase::BeginPlay()
 void ACharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-}
-
-// Called to bind functionality to input
-void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 }
 

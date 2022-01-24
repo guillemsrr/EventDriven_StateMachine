@@ -6,8 +6,8 @@
 #include "GameFramework/Character.h"
 #include "CharacterBase.generated.h"
 
-UCLASS(Abstract)
-class ARCHER_API ACharacterBase : public ACharacter
+UCLASS(Abstract) //HideCategories = (Actor, Replication, Mobile, Input, LOD, Cooking, Rendering, Character, Camera)
+class ARCHER_API ACharacterBase : public ACharacter //APawn
 {
 	GENERATED_BODY()
 
@@ -25,9 +25,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 	UFUNCTION(BlueprintCallable)
 	bool IsAlive() const;
 
@@ -35,5 +32,4 @@ public:
 
 private:
 	const int MAX_HEALTH = 1;
-
 };
