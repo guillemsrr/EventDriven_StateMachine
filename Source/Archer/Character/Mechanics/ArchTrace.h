@@ -1,6 +1,4 @@
 ﻿#pragma once
-#include "Archer/General/ArcherGameMode.h"
-#include "Archer/Weapons/Projectile.h"
 #include "ArchTrace.generated.h"
 
 class USlowTimeManager;
@@ -11,37 +9,46 @@ class ARCHER_API UArchTrace : public UActorComponent
 	GENERATED_BODY()
 public:
 	UArchTrace();
+
 	void Aim();
 	void Shoot(TSubclassOf<class AProjectile> Projectile);
-	void GetMouseLocationAndDirection(FVector& worldLocation, FVector& worldDirection);
+	void GetMouseLocationAndDirection(FVector& WorldLocation, FVector& WorldDirection);
 	void StopAiming();
 	virtual void InitializeComponent() override;
 	void Initialize(USlowTimeManager* TimeManager);
-	void Tick();
-	void StartAutoAim();
-	void StopAutoAim();
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType,
+	                           FActorComponentTickFunction* ThisTickFunction) override;
+	void SetFreeAim();
+	void SetAutoAim();
+	void SetBowSocket(USkeletalMeshComponent* skeletalMeshComponent);
+
+	FORCEINLINE FRotator GetAimRotator() { return AimDirection.Rotation(); }
+	FORCEINLINE void SetAutoAimTargets(TArray<AActor*> Targets) { AutoAimTargets = Targets; }
+	FORCEINLINE bool GetIsFreeAiming(){return IsFreeAiming;}
 
 protected:
 	virtual void BeginPlay() override;
 
-	// Gun muzzle offset from the camera location.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-	FVector MuzzleOffset;
+	UPROPERTY(EditDefaultsOnly)
+	FName BowSocketName;
+
+	UPROPERTY(EditDefaultsOnly)
+	USkeletalMeshComponent* SkeletalMeshComponent;
 
 private:
 	FCollisionObjectQueryParams CollisionObjectQueryParams;
 	FCollisionQueryParams CollisionQueryParams;
 	bool IsAiming;
-	bool IsAutoAiming;
+	bool IsFreeAiming;
 	FVector AimDirection;
-
-	UPROPERTY()
+	USkeletalMeshSocket const* BowSocket;
 	AActor* Owner;
+
+	FTimerHandle AimTimerHandle;
+	TArray<AActor*> AutoAimTargets;
 
 	FHitResult LineTraceFromStartToEnd(FVector start, FVector end) const;
 	void InitializeCollisionTypes();
 	void FreeAim();
 	void AutoAim();
-	FTimerHandle AimTimerHandle;
-	TArray<AActor*> AutoAimTargets;
 };

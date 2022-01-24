@@ -3,9 +3,12 @@
 #include "CoreMinimal.h"
 #include "CharacterBase.h"
 #include "GameFramework/Character.h"
+#include "Mechanics/CharacterMechanics.h"
+#include "Movement/CharacterMovement.h"
 #include "ArcherCharacter.generated.h"
 
 class USlowTimeManager;
+
 UCLASS(config=Game)
 class AArcherCharacter : public ACharacterBase
 {
@@ -13,29 +16,46 @@ class AArcherCharacter : public ACharacterBase
 
 public:
 	AArcherCharacter();
-
+	virtual ~AArcherCharacter() override;
+	
 	void Initialize(USlowTimeManager* TimeManager);
-	void DisableMovement();
-	void EnableMovement();
+	void DisableMovement() const;
+	void EnableMovement() const;
+
+	///TODO-> I can't override this Pawn virtual method?
+	//UFUNCTION(BlueprintCallable, Category=Pawn)
+	//virtual FRotator APawn::GetBaseAimRotation() const override;
+
+	FRotator GetAimRotator() const;
+	FRotator GetAimRotationRelativeToMovement() const;
+	
+	FORCEINLINE FCharacterMechanics* GetCharacterMechanics() const {return CharacterMechanics;}
+	FORCEINLINE FCharacterMovement* GetArcherMovement() const {return ArcherMovement;}
 
 protected:
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<class AProjectile> ProjectileClass;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UArchTrace* Arch;
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AProjectile> ProjectileClass;
+	
 	virtual void BeginPlay() override;
 	virtual void TickActor(float DeltaTime, ELevelTick TickType, FActorTickFunction& ThisTickFunction) override;
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 private:
-	class UArcherMovement* CharacterMovement;
-	class UArchTrace* Arch;
+	class FStateMachine* StateMachine;
+	FCharacterMovement* ArcherMovement;
+	FCharacterMechanics* CharacterMechanics;
 
 	void MoveForward(float Value);
 	void MoveRight(float Value);
+	void StartRunning();
+	void StopRunning();
 	void Aim();
 	void StopAim();
 	void StartShoot();
 	void ReleaseShoot();
-	void AutoAimPressed();
-	void AutoAimReleased();
+	void StartFreeAim();
+	void StopFreeAim();
 };
