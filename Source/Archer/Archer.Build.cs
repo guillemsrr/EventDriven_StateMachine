@@ -16,6 +16,7 @@ public class Archer : ModuleRules
 			"InputCore",
 			"HeadMountedDisplay",
 			"AIModule",
+			"NavigationSystem",
 			"GameplayTasks"
 		});
 	}
