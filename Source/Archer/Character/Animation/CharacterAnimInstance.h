@@ -1,8 +1,10 @@
-
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CharacterAnimationSlots.h"
+#include "CharacterAnimationStates.h"
 #include "Animation/AnimInstance.h"
+
 #include "CharacterAnimInstance.generated.h"
 
 UCLASS()
@@ -15,27 +17,34 @@ public:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeBeginPlay() override;
 
+	void PlayAnimationInSlot(UAnimSequence* AnimSequence, ECharacterAnimationSlots AnimationSlot);
+	FORCEINLINE void SetLocomotionState(ECharacterLocomotionState animationState) { LocomotionState = animationState; }
+	FORCEINLINE void SetAttackState(ECharacterAttackState attackState) { AttackState = attackState; }
+	void SetOrientationType(EOrientationType Orientation);
+
 protected:
 	UFUNCTION(BlueprintCallable)
 	void UpdateAnimationProperties(float DeltaTime);
-	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
 	class AArcherCharacter* Character;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
+	ECharacterLocomotionState LocomotionState;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
+	ECharacterAttackState AttackState;
+
+	EOrientationType OrientationType;
+
 	UPROPERTY(BlueprintReadOnly)
 	float DeltaTime;
-	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
 	float Speed;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
-	bool IsAccelerating;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
-	bool IsInAir;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
-	bool IsSprinting;
+	bool IsMoving;
 
 	//Offset yaw used for strafing
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= Movement)
@@ -43,7 +52,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= Movement)
 	float LastMovementOffsetYaw;
-	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Turn in place")
 	float RootYawOffset;
 
@@ -55,10 +64,14 @@ protected:
 
 	float RotationCurve;
 	float RotationCurveLastFrame;
+
 private:
-	
 	float CurrentCharacterYaw;
 	float LastCharacterYaw;
 
+	void CheckMovement();
 	void TurnInPlace();
+
+
+	TMap<ECharacterAnimationSlots, FName> SlotNames;
 };
