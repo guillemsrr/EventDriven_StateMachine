@@ -1,22 +1,24 @@
 ﻿#include "RunState.h"
-#include "WalkState.h"
-#include "Archer/Character/ArcherCharacter.h"
-#include "Archer/Character/StateMachine/StateMachine.h"
+#include "Archer/Character/Animation/CharacterAnimations.h"
+#include "Archer/Character/Animation/CharacterAnimationStates.h"
+#include "Archer/Character/Movement/CharacterMovement.h"
+#include "Archer/Character/StateMachines/Locomotion/LocomotionStateMachine.h"
+#include "Archer/Character/StateMachines/Mechanics/MechanicsStateMachine.h"
 
-void RunState::Begin()
+void FRunState::Begin()
 {
 	StateMachine->GetCharacterAnimations()->SetLocomotionState(ECharacterLocomotionState::Running);
 	StateMachine->GetCharacterMovement()->SetRunSpeed();
-	StateMachine->GetCharacterMechanics()->StopAim();
+	StateMachine->GetMechanicsStateMachine()->SetEmptyState();
 	
-	StateMachine->MoveForwardDelegateHandle = StateMachine->MoveForwardDelegate.AddRaw(StateMachine->GetCharacterMovement(), &FCharacterMovement::MoveForward);
-	StateMachine->MoveRightDelegateHandle = StateMachine->MoveRightDelegate.AddRaw(StateMachine->GetCharacterMovement(), &FCharacterMovement::MoveRight);
-	StateMachine->StopRunDelegateHandle = StateMachine->StopRunDelegate.AddRaw(StateMachine, &FStateMachine::SetWalkState);
+	StateMachine->MoveForwardDelegate.AddRaw(StateMachine->GetCharacterMovement(), &FCharacterMovement::MoveForward);
+	StateMachine->MoveRightDelegate.AddRaw(StateMachine->GetCharacterMovement(), &FCharacterMovement::MoveRight);
+	StateMachine->StopRunDelegate.AddRaw(StateMachine, &FLocomotionStateMachine::SetWalkState);
 }
 
-void RunState::End()
+void FRunState::End()
 {
-	StateMachine->MoveForwardDelegate.Remove(StateMachine->MoveForwardDelegateHandle);
-	StateMachine->MoveRightDelegate.Remove(StateMachine->MoveRightDelegateHandle);
-	StateMachine->StopRunDelegate.Remove(StateMachine->StopRunDelegateHandle);
+	StateMachine->MoveForwardDelegate.Clear();
+	StateMachine->MoveRightDelegate.Clear();
+	StateMachine->StopRunDelegate.Clear();
 }

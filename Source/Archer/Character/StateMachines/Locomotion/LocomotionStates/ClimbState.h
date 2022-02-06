@@ -1,11 +1,11 @@
 ﻿#pragma once
-#include "StateBase.h"
+#include "LocomotionStateBase.h"
 
-class ClimbState: public StateBase
+class FClimbState: public FLocomotionStateBase
 {
 public:
-	explicit ClimbState(FStateMachine* StateMachine)
-	: StateBase(StateMachine)
+	explicit FClimbState(FStateMachineBase* StateMachine)
+	: FLocomotionStateBase(StateMachine)
 	{
 	}
 	

@@ -39,21 +39,12 @@ void UArchTrace::Initialize(USlowTimeManager* TimeManager)
 	TimeManager->AddFreeTicker(this);
 }
 
-//TODO: Can I extract it to a "Coroutine" instead of checking every tick?¿ 
-void UArchTrace::TickComponent(float DeltaTime, ELevelTick Tick, FActorComponentTickFunction* ThisTickFunction)
+void UArchTrace::SetInterpolatedAimDirection(float DeltaTime)
 {
-	Super::TickComponent(DeltaTime, Tick, ThisTickFunction);
+	AimDirection = UKismetMathLibrary::VInterpTo(AimDirection, TargetAimDirection, DeltaTime, AimInterpolationSpeed);
 
-	if (!IsAiming) return;
-
-	if (IsFreeAiming)
-	{
-		FreeAim();
-	}
-	else
-	{
-		AutoAim();
-	}
+	FVector StartPosition = BowSocket->GetSocketLocation(SkeletalMeshComponent);
+	DrawDebugLine(GetWorld(), StartPosition, StartPosition+AimDirection*1000.0f, FColor::Green, false, 0.01f, 0.f, 10.f);
 }
 
 void UArchTrace::InitializeCollisionTypes()
@@ -67,26 +58,6 @@ void UArchTrace::InitializeCollisionTypes()
 	CollisionObjectQueryParams = FCollisionObjectQueryParams(CollisionTypes);
 	CollisionQueryParams = FCollisionQueryParams();
 	CollisionQueryParams.AddIgnoredActor(Owner);
-}
-
-void UArchTrace::Aim()
-{
-	IsAiming = true;
-}
-
-void UArchTrace::StopAiming()
-{
-	IsAiming = false;
-}
-
-void UArchTrace::SetFreeAim()
-{
-	IsFreeAiming = true;
-}
-
-void UArchTrace::SetAutoAim()
-{
-	IsFreeAiming = false;
 }
 
 void UArchTrace::SetBowSocket(USkeletalMeshComponent* skeletalMeshComponent)
@@ -124,9 +95,9 @@ void UArchTrace::FreeAim()
 	{
 		return;
 	}
-	AimDirection = mouseHitResult.Location - StartPosition;
-	AimDirection.Normalize();
-	FVector end = mouseHitResult.Location + AimDirection * 100;
+	TargetAimDirection = mouseHitResult.Location - StartPosition;
+	TargetAimDirection.Normalize();
+	FVector end = mouseHitResult.Location + TargetAimDirection * 100;
 	FHitResult hitResult = LineTraceFromStartToEnd(StartPosition, end);
 	if (!hitResult.IsValidBlockingHit())
 	{
@@ -134,15 +105,29 @@ void UArchTrace::FreeAim()
 	}
 
 	FVector hitResultLocation = hitResult.Location;
-	AimDirection = hitResultLocation - StartPosition;
-	AimDirection.Normalize();
+	TargetAimDirection = hitResultLocation - StartPosition;
+	TargetAimDirection.Normalize();
 	
 	DrawDebugPoint(GetWorld(), hitResult.Location, 10.f, FColor::Green);
 	DrawDebugLine(GetWorld(), StartPosition, hitResultLocation, FColor::Red, false, 0.01f, 0.f, 10.f);
 	DrawDebugLine(GetWorld(), hitResultLocation, hitResultLocation + FVector(0, 0, -10000.f), FColor::Red, false, 0.01f, 0.f, 10.f);
 }
 
-void UArchTrace::AutoAim()
+void UArchTrace::SetAimDirection(const FVector TargetLocation)
+{
+	FVector StartPosition = BowSocket->GetSocketLocation(SkeletalMeshComponent);
+	TargetAimDirection = TargetLocation - StartPosition;
+	TargetAimDirection.Normalize();
+	DrawDebugLine(GetWorld(), StartPosition, TargetLocation, FColor::Red, false, 0.01f, 0.f,
+	              10.f);
+}
+
+void UArchTrace::SetAimDirection(const AActor* ClosestTarget)
+{
+	SetAimDirection(ClosestTarget->GetActorLocation());
+}
+
+void UArchTrace::GetPlayerMousePositionAndDirection(FVector2D& PlayerScreenLocation, FVector2D& PlayerDirection)
 {
 	float MouseX;
 	float MouseY;
@@ -150,13 +135,24 @@ void UArchTrace::AutoAim()
 	FVector2D MousePosition = FVector2D(MouseX, MouseY);
 
 	FVector StartPosition = BowSocket->GetSocketLocation(SkeletalMeshComponent);
-	FVector2D PlayerScreenLocation;
 	UGameplayStatics::GetPlayerController(this, 0)->ProjectWorldLocationToScreen(
 		StartPosition, PlayerScreenLocation, true);
 
-	FVector2D PlayerDirection = MousePosition - PlayerScreenLocation;
+	PlayerDirection = MousePosition - PlayerScreenLocation;
 	PlayerDirection.Normalize();
+}
 
+AActor* UArchTrace::GetClosestTarget()
+{
+	FVector2D PlayerScreenLocation;
+	FVector2D PlayerDirection;
+	GetPlayerMousePositionAndDirection(PlayerScreenLocation, PlayerDirection);
+
+	return GetClosestTargetInPlayerDirection(PlayerScreenLocation, PlayerDirection);
+}
+
+AActor* UArchTrace::GetClosestTargetInPlayerDirection(FVector2D PlayerScreenLocation, FVector2D PlayerDirection)
+{
 	float SmallestAngle = TNumericLimits<float>::Max();
 	AActor* ClosestTarget = nullptr;
 	for (AActor* Target : AutoAimTargets)
@@ -175,23 +171,13 @@ void UArchTrace::AutoAim()
 		}
 	}
 
-	if (!ClosestTarget) return;
-
-	AimDirection = ClosestTarget->GetActorLocation() - StartPosition;
-	AimDirection.Normalize();
-	DrawDebugLine(GetWorld(), StartPosition, ClosestTarget->GetActorLocation(), FColor::Red, false, 0.01f, 0.f,
-	              10.f);
+	return ClosestTarget;
 }
 
 void UArchTrace::Shoot(TSubclassOf<AProjectile> ProjectileTemplate)
 {
-	if (!IsAiming)
-	{
-		return;
-	}
-
-	FRotator ProjectileRotation = AimDirection.Rotation();
-	FVector ProjectileLocation = BowSocket->GetSocketLocation(SkeletalMeshComponent) + AimDirection*10.f;
+	FRotator ProjectileRotation = TargetAimDirection.Rotation();
+	FVector ProjectileLocation = BowSocket->GetSocketLocation(SkeletalMeshComponent) + TargetAimDirection*10.f;
 
 	UWorld* World = GetWorld();
 	if (!World) return;
@@ -204,7 +190,7 @@ void UArchTrace::Shoot(TSubclassOf<AProjectile> ProjectileTemplate)
 	                                                         SpawnParams);
 	if (Projectile)
 	{
-		Projectile->FireInDirection(AimDirection);
+		Projectile->FireInDirection(TargetAimDirection);
 	}
 }
 

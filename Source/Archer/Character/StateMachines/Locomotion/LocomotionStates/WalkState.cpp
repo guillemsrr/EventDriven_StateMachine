@@ -1,34 +1,29 @@
 ﻿#include "WalkState.h"
-#include "Archer/Character/ArcherCharacter.h"
-#include "Archer/Character/StateMachine/StateMachine.h"
-#include "RunState.h"
+#include "Archer/Character/Animation/CharacterAnimations.h"
+#include "Archer/Character/Animation/CharacterAnimationStates.h"
+#include "Archer/Character/Movement/CharacterMovement.h"
+#include "Archer/Character/StateMachines/Locomotion/LocomotionStateMachine.h"
+#include "Archer/Character/StateMachines/Mechanics/MechanicsStateMachine.h"
 
-void WalkState::Begin()
+void FWalkState::Begin()
 {
 	StateMachine->GetCharacterAnimations()->SetLocomotionState(ECharacterLocomotionState::Normal);
 	StateMachine->GetCharacterMovement()->SetWalkSpeed();
+	StateMachine->GetMechanicsStateMachine()->SetAimReadyState();
 
-	StateMachine->MoveForwardDelegateHandle = StateMachine->MoveForwardDelegate.AddRaw(
-		StateMachine->GetCharacterMovement(), &FCharacterMovement::MoveForward);
-	
-	StateMachine->MoveRightDelegateHandle = StateMachine->MoveRightDelegate.AddRaw(
-		StateMachine->GetCharacterMovement(), &FCharacterMovement::MoveRight);
-	
-	StateMachine->StartRunDelegateHandle = StateMachine->StartRunDelegate.AddRaw(
-		StateMachine, &FStateMachine::SetRunState);
-	
-	StateMachine->StartAimDelegateHandle = StateMachine->StartAimDelegate.AddRaw(
-		StateMachine->GetCharacterMechanics(), &FCharacterMechanics::StartAim);
-	
-	StateMachine->StopAimDelegateHandle = StateMachine->StopAimDelegate.AddRaw(
-		StateMachine->GetCharacterMechanics(), &FCharacterMechanics::StopAim);
+	StateMachine->MoveForwardDelegate.AddRaw(StateMachine->GetCharacterMovement(), &FCharacterMovement::MoveForward);
+	StateMachine->MoveRightDelegate.AddRaw(StateMachine->GetCharacterMovement(), &FCharacterMovement::MoveRight);
+	StateMachine->StartRunDelegate.AddRaw(StateMachine, &FLocomotionStateMachine::SetRunState);
+
+	StateMachine->GetMechanicsStateMachine()->StopAimingDelegate.AddRaw(StateMachine->GetMechanicsStateMachine(),
+	                                                                    &FMechanicsStateMachine::SetAimReadyState);
 }
 
-void WalkState::End()
+void FWalkState::End()
 {
-	StateMachine->MoveForwardDelegate.Remove(StateMachine->MoveForwardDelegateHandle);
-	StateMachine->MoveRightDelegate.Remove(StateMachine->MoveRightDelegateHandle);
-	StateMachine->StartRunDelegate.Remove(StateMachine->StartRunDelegateHandle);
-	StateMachine->StartAimDelegate.Remove(StateMachine->StartAimDelegateHandle);
-	StateMachine->StopAimDelegate.Remove(StateMachine->StopAimDelegateHandle);
+	StateMachine->MoveForwardDelegate.Clear();
+	StateMachine->MoveRightDelegate.Clear();
+	StateMachine->StartRunDelegate.Clear();
+
+	StateMachine->GetMechanicsStateMachine()->StopAimingDelegate.Clear();
 }

@@ -2,9 +2,14 @@
 
 #include "CoreMinimal.h"
 #include "CharacterBase.h"
+
+#include "Animation/CharacterAnimations.h"
 #include "GameFramework/Character.h"
 #include "Mechanics/CharacterMechanics.h"
 #include "Movement/CharacterMovement.h"
+#include "StateMachines/Locomotion/LocomotionStateMachine.h"
+#include "StateMachines/Mechanics/MechanicsStateMachine.h"
+
 #include "ArcherCharacter.generated.h"
 
 class USlowTimeManager;
@@ -17,7 +22,7 @@ class AArcherCharacter : public ACharacterBase
 public:
 	AArcherCharacter();
 	virtual ~AArcherCharacter() override;
-	
+
 	void Initialize(USlowTimeManager* TimeManager);
 	void DisableMovement() const;
 	void EnableMovement() const;
@@ -28,23 +33,29 @@ public:
 
 	FRotator GetAimRotator() const;
 	FRotator GetAimRotationRelativeToMovement() const;
-	
-	FORCEINLINE FCharacterMechanics* GetCharacterMechanics() const {return CharacterMechanics;}
-	FORCEINLINE FCharacterMovement* GetArcherMovement() const {return ArcherMovement;}
+
+	FORCEINLINE FCharacterMechanics* GetCharacterMechanics() const { return CharacterMechanics; }
+	FORCEINLINE FCharacterMovement* GetArcherMovement() const { return ArcherMovement; }
+	FORCEINLINE UCharacterAnimations* GetArcherAnimations() const { return CharacterAnimations; }
+	FORCEINLINE FMechanicsStateMachine* GetMechanicsStateMachine() const { return MechanicsStateMachine; }
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	UArchTrace* Arch;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UCharacterAnimations* CharacterAnimations;
+
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AProjectile> ProjectileClass;
-	
+
 	virtual void BeginPlay() override;
 	virtual void TickActor(float DeltaTime, ELevelTick TickType, FActorTickFunction& ThisTickFunction) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 private:
-	class FStateMachine* StateMachine;
+	FLocomotionStateMachine* LocomotionStateMachine;
+	FMechanicsStateMachine* MechanicsStateMachine;
 	FCharacterMovement* ArcherMovement;
 	FCharacterMechanics* CharacterMechanics;
 
@@ -58,4 +69,6 @@ private:
 	void ReleaseShoot();
 	void StartFreeAim();
 	void StopFreeAim();
+	void PrecisionAimX(float Value);
+	void PrecisionAimY(float Value);
 };

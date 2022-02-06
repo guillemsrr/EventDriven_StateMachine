@@ -10,45 +10,44 @@ class ARCHER_API UArchTrace : public UActorComponent
 public:
 	UArchTrace();
 
-	void Aim();
-	void Shoot(TSubclassOf<class AProjectile> Projectile);
-	void GetMouseLocationAndDirection(FVector& WorldLocation, FVector& WorldDirection);
-	void StopAiming();
 	virtual void InitializeComponent() override;
 	void Initialize(USlowTimeManager* TimeManager);
-	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType,
-	                           FActorComponentTickFunction* ThisTickFunction) override;
-	void SetFreeAim();
-	void SetAutoAim();
+	void SetInterpolatedAimDirection(float DeltaTime);
 	void SetBowSocket(USkeletalMeshComponent* skeletalMeshComponent);
+	void FreeAim();
+	void SetAimDirection(const AActor* ClosestTarget);
+	void SetAimDirection(const FVector TargetLocation);
+	void Shoot(TSubclassOf<class AProjectile> Projectile);
+	void GetMouseLocationAndDirection(FVector& WorldLocation, FVector& WorldDirection);
+	AActor* GetClosestTarget();
 
-	FORCEINLINE FRotator GetAimRotator() { return AimDirection.Rotation(); }
+	FORCEINLINE FRotator GetAimRotator() const { return AimDirection.Rotation(); }
 	FORCEINLINE void SetAutoAimTargets(TArray<AActor*> Targets) { AutoAimTargets = Targets; }
-	FORCEINLINE bool GetIsFreeAiming(){return IsFreeAiming;}
 
 protected:
-	virtual void BeginPlay() override;
-
 	UPROPERTY(EditDefaultsOnly)
 	FName BowSocketName;
 
 	UPROPERTY(EditDefaultsOnly)
 	USkeletalMeshComponent* SkeletalMeshComponent;
 
+	UPROPERTY(EditDefaultsOnly)
+	float AimInterpolationSpeed = 5.f;
+	
+	virtual void BeginPlay() override;
+
 private:
+	AActor* Owner;
 	FCollisionObjectQueryParams CollisionObjectQueryParams;
 	FCollisionQueryParams CollisionQueryParams;
-	bool IsAiming;
-	bool IsFreeAiming;
 	FVector AimDirection;
+	FVector TargetAimDirection;
 	USkeletalMeshSocket const* BowSocket;
-	AActor* Owner;
-
-	FTimerHandle AimTimerHandle;
 	TArray<AActor*> AutoAimTargets;
-
+	
 	FHitResult LineTraceFromStartToEnd(FVector start, FVector end) const;
 	void InitializeCollisionTypes();
-	void FreeAim();
-	void AutoAim();
+
+	void GetPlayerMousePositionAndDirection(FVector2D& PlayerScreenLocation, FVector2D& PlayerDirection);
+	AActor* GetClosestTargetInPlayerDirection(FVector2D PlayerScreenLocation, FVector2D PlayerDirection);
 };

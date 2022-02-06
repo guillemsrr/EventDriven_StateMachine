@@ -1,13 +1,15 @@
 ﻿#include "JumpState.h"
 
-#include "Archer/Character/StateMachine/StateMachine.h"
+#include "Archer/Character/Animation/CharacterAnimations.h"
+#include "Archer/Character/Animation/CharacterAnimationStates.h"
+#include "Archer/Character/StateMachines/Locomotion/LocomotionStateMachine.h"
 
-void JumpState::Begin()
+void FJumpState::Begin()
 {
 	StateMachine->GetCharacterAnimations()->SetLocomotionState(ECharacterLocomotionState::Jumping);
 }
 
-void JumpState::End()
+void FJumpState::End()
 {
 	StateMachine->GetCharacterAnimations()->SetLocomotionState(ECharacterLocomotionState::Normal);
 }

@@ -1,14 +1,13 @@
 ﻿#pragma once
-#include "StateBase.h"
+#include "LocomotionStateBase.h"
 
-class WalkState: public StateBase
+class FWalkState: public FLocomotionStateBase
 {
 public:
-	explicit WalkState(FStateMachine* StateMachine)
-		: StateBase(StateMachine)
+	explicit FWalkState(FStateMachineBase* StateMachine) : FLocomotionStateBase(StateMachine)
 	{
 	}
-	
+
 	virtual void Begin() override;
 	virtual void End() override;
 };

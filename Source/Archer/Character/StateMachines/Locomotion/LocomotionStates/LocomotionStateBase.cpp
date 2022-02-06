@@ -1,6 +1,6 @@
-﻿#include "StateBase.h"
+﻿#include "LocomotionStateBase.h"
 
-LocomotionStateBase::LocomotionStateBase(FLocomotionStateMachine* StateMachine)
+FLocomotionStateBase::FLocomotionStateBase(FStateMachineBase* StateMachine)
 {
-	this->StateMachine = StateMachine;
+	this->StateMachine = reinterpret_cast<FLocomotionStateMachine*>(StateMachine);
 }

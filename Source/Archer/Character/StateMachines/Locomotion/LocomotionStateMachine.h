@@ -1,40 +1,21 @@
 ﻿#pragma once
-#include "Archer/Character/ArcherCharacter.h"
+#include "Archer/Character/StateMachines/StateMachineBase.h"
 
-class StateBase;
-class AArcherCharacter;
-class FCharacterMovement;
-class FCharacterMechanics;
-
-DECLARE_MULTICAST_DELEGATE_OneParam(MovementSignature, float);
-DECLARE_MULTICAST_DELEGATE(ActionSignature);
-
-class FLocomotionStateMachine
+class FLocomotionStateMachine: public FStateMachineBase
 {
 public:
 	explicit FLocomotionStateMachine(AArcherCharacter* ArcherCharacter);
 	~FLocomotionStateMachine();
-
-	StateBase* State;
-
+	
 	MovementSignature MoveForwardDelegate;
 	MovementSignature MoveRightDelegate;
 	ActionSignature StartRunDelegate;
 	ActionSignature StopRunDelegate;
-	ActionSignature StartAimDelegate;
-	ActionSignature StopAimDelegate;
 	ActionSignature StartFreeAimDelegate;
 	ActionSignature StopFreeAimDelegate;
 	ActionSignature DashDelegate;
 	ActionSignature StartClimbDelegate;
 	ActionSignature StopClimbDelegate;
-
-	FDelegateHandle MoveForwardDelegateHandle;
-	FDelegateHandle MoveRightDelegateHandle;
-	FDelegateHandle StartRunDelegateHandle;
-	FDelegateHandle StopRunDelegateHandle;
-	FDelegateHandle StartAimDelegateHandle;
-	FDelegateHandle StopAimDelegateHandle;
 
 	void SetWalkState();
 	void SetRunState();
@@ -43,13 +24,8 @@ public:
 	void SetClimbState();
 	void SetSlowmoState();
 
-	FORCEINLINE FCharacterMovement* GetCharacterMovement() const { return ArcherCharacter->GetArcherMovement(); }
-	FORCEINLINE FCharacterMechanics* GetCharacterMechanics() const { return ArcherCharacter->GetCharacterMechanics(); }
-	FORCEINLINE UCharacterAnimations* GetCharacterAnimations() const { return ArcherCharacter->GetArcherAnimations(); }
-
-private:
-	AArcherCharacter* ArcherCharacter;
-
-	template <class T>
-	void SetState();
+	class FMechanicsStateMachine* GetMechanicsStateMachine() const;
+	
+protected:
+	virtual void SetSpecificState() override{};
 };

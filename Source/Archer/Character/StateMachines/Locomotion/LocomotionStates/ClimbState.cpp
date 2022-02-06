@@ -1,12 +1,14 @@
 ﻿#include "ClimbState.h"
 
-#include "Archer/Character/StateMachine/StateMachine.h"
+#include "Archer/Character/Animation/CharacterAnimations.h"
+#include "Archer/Character/Animation/CharacterAnimationStates.h"
+#include "Archer/Character/StateMachines/Locomotion/LocomotionStateMachine.h"
 
-void ClimbState::Begin()
+void FClimbState::Begin()
 {
 	StateMachine->GetCharacterAnimations()->SetLocomotionState(ECharacterLocomotionState::Climbing);
 }
 
-void ClimbState::End()
+void FClimbState::End()
 {
 }

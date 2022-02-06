@@ -1,5 +1,6 @@
 #include "ArcherCharacter.h"
 
+#include "Animation/CharacterAnimInstance.h"
 #include "Archer/Camera/PrecisionCameraActor.h"
 #include "Archer/TimeManagement/SlowTimeManager.h"
 #include "Components/InputComponent.h"
@@ -9,19 +10,25 @@
 #include "Mechanics/ArchTrace.h"
 #include "Movement/CharacterMovement.h"
 #include "Mechanics/CharacterMechanics.h"
-#include "StateMachine/StateMachine.h"
+#include "StateMachines/Locomotion/LocomotionStateMachine.h"
+#include "StateMachines/Mechanics/MechanicsStateMachine.h"
 
 AArcherCharacter::AArcherCharacter()
 {
 	ArcherMovement = new FCharacterMovement(GetCharacterMovement());
 	Arch = CreateDefaultSubobject<UArchTrace>(TEXT("ArchTrace"));
-	CharacterMechanics = new FCharacterMechanics(Arch);
-	this->StateMachine = new FStateMachine(this);
+	CharacterAnimations = CreateDefaultSubobject<UCharacterAnimations>(TEXT("CharacterAnimations"));
+	CharacterAnimations->Initialize(Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance()));
+	CharacterMechanics = new FCharacterMechanics(Arch, CharacterAnimations);
+	LocomotionStateMachine = new FLocomotionStateMachine(this);
+	MechanicsStateMachine = new FMechanicsStateMachine(this);
+
+	bUseControllerRotationYaw = false;
 }
 
 AArcherCharacter::~AArcherCharacter()
 {
-	delete StateMachine;
+	delete LocomotionStateMachine;
 	delete ArcherMovement;
 	delete CharacterMechanics;
 }
@@ -42,23 +49,28 @@ void AArcherCharacter::BeginPlay()
 	Camera->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
 
 	Arch->SetBowSocket(GetMesh());
-
+	CharacterAnimations->Initialize(Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance()));
+	CharacterMechanics->SetProjectile(ProjectileClass);
 	ArcherMovement->SetCameraManager(UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0));
 }
 
 void AArcherCharacter::TickActor(float DeltaTime, ELevelTick Tick, FActorTickFunction& ThisTickFunction)
 {
 	Super::TickActor(DeltaTime, Tick, ThisTickFunction);
+
+	MechanicsStateMachine->Tick(DeltaTime);
 }
 
 void AArcherCharacter::EnableMovement() const
 {
-	StateMachine->SetWalkState();
+	LocomotionStateMachine->SetWalkState();
+	MechanicsStateMachine->SetAimReadyState();
 }
 
 void AArcherCharacter::DisableMovement() const
 {
-	StateMachine->SetSlowmoState();
+	LocomotionStateMachine->SetSlowmoState();
+	MechanicsStateMachine->SetEmptyState();
 }
 
 FRotator AArcherCharacter::GetAimRotator() const
@@ -68,7 +80,7 @@ FRotator AArcherCharacter::GetAimRotator() const
 
 FRotator AArcherCharacter::GetAimRotationRelativeToMovement() const
 {
-	FRotator MovementRotation = UKismetMathLibrary::MakeRotFromX(GetVelocity());
+	const FRotator MovementRotation = UKismetMathLibrary::MakeRotFromX(GetVelocity());
 	return UKismetMathLibrary::NormalizedDeltaRotator(MovementRotation, GetAimRotator());
 }
 
@@ -88,60 +100,66 @@ void AArcherCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("Shoot", IE_Released, this, &ThisClass::ReleaseShoot);
 	PlayerInputComponent->BindAction("FreeAimMode", IE_Pressed, this, &ThisClass::StartFreeAim);
 	PlayerInputComponent->BindAction("FreeAimMode", IE_Released, this, &ThisClass::StopFreeAim);
+	PlayerInputComponent->BindAxis("PrecisionAimX", this, &ThisClass::PrecisionAimX);
+	PlayerInputComponent->BindAxis("PrecisionAimY", this, &ThisClass::PrecisionAimY);
 }
 
 void AArcherCharacter::MoveForward(const float Value)
 {
-	StateMachine->MoveForwardDelegate.Broadcast(Value);
+	LocomotionStateMachine->MoveForwardDelegate.Broadcast(Value);
 }
 
 void AArcherCharacter::MoveRight(const float Value)
 {
-	StateMachine->MoveRightDelegate.Broadcast(Value);
+	LocomotionStateMachine->MoveRightDelegate.Broadcast(Value);
 }
 
 void AArcherCharacter::StartRunning()
 {
-	StateMachine->StartRunDelegate.Broadcast();
+	LocomotionStateMachine->StartRunDelegate.Broadcast();
 }
 
 void AArcherCharacter::StopRunning()
 {
-	StateMachine->StopRunDelegate.Broadcast();
+	LocomotionStateMachine->StopRunDelegate.Broadcast();
 }
 
 void AArcherCharacter::Aim()
 {
-	StateMachine->StartAimDelegate.Broadcast();
+	MechanicsStateMachine->StartAimingDelegate.Broadcast();
 }
 
 void AArcherCharacter::StopAim()
 {
-	StateMachine->StopAimDelegate.Broadcast();
+	MechanicsStateMachine->StopAimingDelegate.Broadcast();
 }
 
 void AArcherCharacter::StartShoot()
 {
-	//TODO handle it through delegates?
-	StateMachine->StartShootDelegate.Broadcast();
+	MechanicsStateMachine->StartShootingDelegate.Broadcast();
 }
 
 void AArcherCharacter::ReleaseShoot()
 {
-	//TODO handle it through delegates?
-	StateMachine->ReleaseShootDelegate.Broadcast();
-	
-	Arch->Shoot(ProjectileClass);
+	MechanicsStateMachine->StopShootingDelegate.Broadcast();
 }
 
 void AArcherCharacter::StartFreeAim()
 {
-	//StateMachine->StartFreeAimDelegate.Broadcast();
-	Arch->SetFreeAim();
+	MechanicsStateMachine->StartFreeAimDelegate.Broadcast();
 }
 
 void AArcherCharacter::StopFreeAim()
 {
-	//StateMachine->StopFreeAimDelegate.Broadcast();
-	Arch->SetAutoAim();
+	MechanicsStateMachine->StopFreeAimDelegate.Broadcast();
+}
+
+void AArcherCharacter::PrecisionAimX(float Value)
+{
+	MechanicsStateMachine->PrecisionXDelegate.Broadcast(Value);
+}
+
+void AArcherCharacter::PrecisionAimY(float Value)
+{
+	MechanicsStateMachine->PrecisionYDelegate.Broadcast(Value);
 }

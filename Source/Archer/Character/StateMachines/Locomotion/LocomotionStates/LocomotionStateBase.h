@@ -1,14 +1,12 @@
 ﻿#pragma once
-#include "Archer/Character/StateMachines/Locomotion/LocomotionStateMachine.h"
+#include "Archer/Character/StateMachines/StateBase.h"
 
-class LocomotionStateBase
+class FLocomotionStateMachine;
+
+class FLocomotionStateBase: public FStateBase
 {
 public:
-	LocomotionStateBase(FLocomotionStateMachine* StateMachine);
-	virtual ~LocomotionStateBase(){};
-
-	virtual void Begin() = 0;
-	virtual void End() = 0;
+	explicit FLocomotionStateBase(class FStateMachineBase* StateMachine);
 
 protected:
 	FLocomotionStateMachine* StateMachine;

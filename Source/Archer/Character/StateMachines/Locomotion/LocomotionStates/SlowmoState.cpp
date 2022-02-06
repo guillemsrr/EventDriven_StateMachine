@@ -1,9 +1,9 @@
 ﻿#include "SlowmoState.h"
 
-void SlowmoState::Begin()
+void FSlowmoState::Begin()
 {
 }
 
-void SlowmoState::End()
+void FSlowmoState::End()
 {
 }

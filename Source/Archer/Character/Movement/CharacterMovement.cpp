@@ -14,21 +14,35 @@ FCharacterMovement::FCharacterMovement(UCharacterMovementComponent* MovementComp
 	MovementComponent->JumpZVelocity = 1000.f;
 }
 
-void FCharacterMovement::MoveForward(float Value) const
+FVector FCharacterMovement::GetCameraRelativeForwardVector() const
 {
 	const FVector ForwardVector = CameraManager->GetActorForwardVector();
-	FVector ProjectedVector = UKismetMathLibrary::ProjectVectorOnToPlane(ForwardVector, FVector::UpVector);
-	ProjectedVector.Normalize();
+	return GetProjectedVector(ForwardVector);
+}
+
+FVector FCharacterMovement::GetCameraRelativeRightVector() const
+{
+	const FVector RightVector = CameraManager->GetActorRightVector();
+	return GetProjectedVector(RightVector);
+}
+
+void FCharacterMovement::MoveForward(float Value) const
+{
+	FVector ProjectedVector = GetCameraRelativeForwardVector();
 	MovementComponent->AddInputVector(ProjectedVector * Value);
 }
 
 void FCharacterMovement::MoveRight(float Value) const
 {
-	const FVector RightVector = CameraManager->GetActorRightVector();
-	FVector ProjectedVector = UKismetMathLibrary::ProjectVectorOnToPlane(RightVector, FVector::UpVector);
-	ProjectedVector.Normalize();
-	
+	const FVector ProjectedVector = GetCameraRelativeRightVector();
 	MovementComponent->AddInputVector(ProjectedVector * Value);
+}
+
+FVector FCharacterMovement::GetProjectedVector(const FVector Vector) const
+{
+	FVector ProjectedVector = UKismetMathLibrary::ProjectVectorOnToPlane(Vector, FVector::UpVector);
+	ProjectedVector.Normalize();
+	return ProjectedVector;
 }
 
 /**
@@ -39,7 +53,12 @@ void FCharacterMovement::SetCameraManager(APlayerCameraManager* cameraManager)
 	this->CameraManager = cameraManager;
 }
 
-void FCharacterMovement::SetSpeed(float Speed) const
+void FCharacterMovement::SetWalkSpeed() const
 {
-	MovementComponent->MaxWalkSpeed = Speed;
+	MovementComponent->MaxWalkSpeed = WalkSpeed;
+}
+
+void FCharacterMovement::SetRunSpeed() const
+{
+	MovementComponent->MaxWalkSpeed = RunSpeed;
 }

@@ -1,17 +1,17 @@
-﻿#include "StateMachine.h"
-#include "Archer/Character/ArcherCharacter.h"
-#include "States/ClimbState.h"
-#include "States/DashState.h"
-#include "States/JumpState.h"
-#include "States/RunState.h"
-#include "States/SlowmoState.h"
-#include "States/StateBase.h"
-#include "States/WalkState.h"
+﻿#include "LocomotionStateMachine.h"
 
-FLocomotionStateMachine::FLocomotionStateMachine(AArcherCharacter* ArcherCharacter)
+#include "Archer/Character/ArcherCharacter.h"
+#include "LocomotionStates/ClimbState.h"
+#include "LocomotionStates/DashState.h"
+#include "LocomotionStates/JumpState.h"
+#include "LocomotionStates/RunState.h"
+#include "LocomotionStates/SlowmoState.h"
+#include "LocomotionStates/WalkState.h"
+
+FLocomotionStateMachine::FLocomotionStateMachine(AArcherCharacter* ArcherCharacter) : FStateMachineBase(ArcherCharacter)
 {
 	this->ArcherCharacter = ArcherCharacter;
-	State = new WalkState(this);
+	State = new FWalkState(this);
 }
 
 FLocomotionStateMachine::~FLocomotionStateMachine()
@@ -19,41 +19,37 @@ FLocomotionStateMachine::~FLocomotionStateMachine()
 	delete State;
 }
 
-template <class T>
-void FLocomotionStateMachine::SetState()
-{
-	State->End();
-	delete State;
-	State = new T(this);
-	State->Begin();
-}
-
 void FLocomotionStateMachine::SetWalkState()
 {
-	SetState<WalkState>();
+	SetState<FWalkState>();
 }
 
 void FLocomotionStateMachine::SetRunState()
 {
-	SetState<RunState>();
+	SetState<FRunState>();
 }
 
 void FLocomotionStateMachine::SetDashState()
 {
-	SetState<DashState>();
+	SetState<FDashState>();
 }
 
 void FLocomotionStateMachine::SetJumpState()
 {
-	SetState<JumpState>();
+	SetState<FJumpState>();
 }
 
 void FLocomotionStateMachine::SetClimbState()
 {
-	SetState<ClimbState>();
+	SetState<FClimbState>();
 }
 
 void FLocomotionStateMachine::SetSlowmoState()
 {
-	SetState<SlowmoState>();
+	SetState<FSlowmoState>();
+}
+
+FMechanicsStateMachine* FLocomotionStateMachine::GetMechanicsStateMachine() const
+{
+	return ArcherCharacter->GetMechanicsStateMachine(); 
 }
