@@ -5,7 +5,8 @@
 
 void WalkState::Begin()
 {
-	StateMachine->GetCharacterMovement()->SetSpeed(WalkSpeed);
+	StateMachine->GetCharacterAnimations()->SetLocomotionState(ECharacterLocomotionState::Normal);
+	StateMachine->GetCharacterMovement()->SetWalkSpeed();
 
 	StateMachine->MoveForwardDelegateHandle = StateMachine->MoveForwardDelegate.AddRaw(
 		StateMachine->GetCharacterMovement(), &FCharacterMovement::MoveForward);

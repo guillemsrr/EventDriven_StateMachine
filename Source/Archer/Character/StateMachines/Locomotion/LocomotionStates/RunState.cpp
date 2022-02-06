@@ -5,7 +5,8 @@
 
 void RunState::Begin()
 {
-	StateMachine->GetCharacterMovement()->SetSpeed(750.f);
+	StateMachine->GetCharacterAnimations()->SetLocomotionState(ECharacterLocomotionState::Running);
+	StateMachine->GetCharacterMovement()->SetRunSpeed();
 	StateMachine->GetCharacterMechanics()->StopAim();
 	
 	StateMachine->MoveForwardDelegateHandle = StateMachine->MoveForwardDelegate.AddRaw(StateMachine->GetCharacterMovement(), &FCharacterMovement::MoveForward);

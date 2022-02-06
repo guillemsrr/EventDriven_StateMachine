@@ -9,11 +9,11 @@ class FCharacterMechanics;
 DECLARE_MULTICAST_DELEGATE_OneParam(MovementSignature, float);
 DECLARE_MULTICAST_DELEGATE(ActionSignature);
 
-class FStateMachine
+class FLocomotionStateMachine
 {
 public:
-	explicit FStateMachine(AArcherCharacter* ArcherCharacter);
-	~FStateMachine();
+	explicit FLocomotionStateMachine(AArcherCharacter* ArcherCharacter);
+	~FLocomotionStateMachine();
 
 	StateBase* State;
 
@@ -25,8 +25,6 @@ public:
 	ActionSignature StopAimDelegate;
 	ActionSignature StartFreeAimDelegate;
 	ActionSignature StopFreeAimDelegate;
-	ActionSignature StartShootDelegate;
-	ActionSignature ReleaseShootDelegate;
 	ActionSignature DashDelegate;
 	ActionSignature StartClimbDelegate;
 	ActionSignature StopClimbDelegate;
@@ -47,6 +45,7 @@ public:
 
 	FORCEINLINE FCharacterMovement* GetCharacterMovement() const { return ArcherCharacter->GetArcherMovement(); }
 	FORCEINLINE FCharacterMechanics* GetCharacterMechanics() const { return ArcherCharacter->GetCharacterMechanics(); }
+	FORCEINLINE UCharacterAnimations* GetCharacterAnimations() const { return ArcherCharacter->GetArcherAnimations(); }
 
 private:
 	AArcherCharacter* ArcherCharacter;

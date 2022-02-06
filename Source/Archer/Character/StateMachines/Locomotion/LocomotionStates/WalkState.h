@@ -11,7 +11,4 @@ public:
 	
 	virtual void Begin() override;
 	virtual void End() override;
-
-private:
-	const float WalkSpeed = 500.f;
 };
