@@ -61,8 +61,15 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 	FVector NormalImpulse, const FHitResult& Hit)
 {
 	ACharacterBase* CharacterBase = Cast<ACharacterBase>(OtherActor);
+	
 	if (CharacterBase)
 	{
+		if(CharacterBase->ActorHasTag("Player"))
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("PLAYER!"));
+			return;
+		}
+
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, TEXT("HIT"));
 		CharacterBase->Hit();
 	}
