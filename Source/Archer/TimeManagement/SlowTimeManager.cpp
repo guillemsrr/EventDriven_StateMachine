@@ -22,6 +22,11 @@ void USlowTimeManager::SetGlobalTimeDilation()
 		return;
 	}
 
+	if(TimeFreeActors.Num() == 0)
+	{
+		return;
+	}	
+
 	if(TimeFreeActors[0] == nullptr) return;
 	if(TimeFreeActors[0]->GetWorld() == nullptr) return;
 	
