@@ -35,20 +35,20 @@ void UCharacterAnimInstance::SetOrientationType(EOrientationType Orientation)
 	if(OrientationType == EOrientationType::Movement)
 	{
 		Character->GetCharacterMovement()->bOrientRotationToMovement = true;
-	}
-	else
-	{
-		Character->GetCharacterMovement()->bOrientRotationToMovement = false;
-		Character->SetActorRotation(FRotator(0, 0, 0));
-
-		LastMovementOffsetYaw = 0;
+		
 		MovementOffsetYaw = 0;
+		LastMovementOffsetYaw = 0;
 		LastCharacterYaw = 0;
 		CurrentCharacterYaw = 0;
 		RootYawOffset = 0.f;
 		RotationCurveLastFrame = 0.f;
 		RotationCurve = 0.f;
 		Pitch = 0;
+	}
+	else
+	{
+		Character->GetCharacterMovement()->bOrientRotationToMovement = false;
+		Character->SetActorRotation(FRotator(0, 0, 0));
 	}
 }
 
@@ -62,6 +62,7 @@ void UCharacterAnimInstance::UpdateAnimationProperties(float deltaTime)
 	Velocity.Z = 0;
 	Speed = Velocity.Size();
 	IsMoving = Speed != 0.f;
+
 
 	if(OrientationType == EOrientationType::AimDirection)
 	{
