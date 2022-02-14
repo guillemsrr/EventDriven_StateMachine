@@ -1,6 +1,8 @@
 #include "CharacterAnimInstance.h"
 
 #include "Archer/Character/ArcherCharacter.h"
+#include "Archer/Utilities/Debug.h"
+
 #include "Engine/SkeletalMeshSocket.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
@@ -54,15 +56,36 @@ void UCharacterAnimInstance::SetOrientationType(EOrientationType Orientation)
 
 void UCharacterAnimInstance::UpdateAnimationProperties(float deltaTime)
 {
+	if(!Character)
+	{
+		return;
+	}
+	
 	DeltaTime = deltaTime;
-
-	if (!Character) return;
 
 	FVector Velocity = Character->GetVelocity();
 	Velocity.Z = 0;
 	Speed = Velocity.Size();
 	IsMoving = Speed != 0.f;
 
+	switch (AttackState)
+	{
+	case ECharacterAttackState::Aiming:
+		DEBUG_LOG_TICK("Aiming");
+		break;
+	case ECharacterAttackState::Drawback:
+		DEBUG_LOG_TICK("Drawback");
+		break;
+	case ECharacterAttackState::Holding:
+		DEBUG_LOG_TICK("Holding");
+		break;
+	case ECharacterAttackState::Release:
+		DEBUG_LOG_TICK("Release");
+		break;
+	case ECharacterAttackState::NotAiming:
+		DEBUG_LOG_TICK("Not Aiming");
+		break;
+	}
 
 	if(OrientationType == EOrientationType::AimDirection)
 	{

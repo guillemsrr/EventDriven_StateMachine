@@ -68,10 +68,8 @@ protected:
 private:
 	float CurrentCharacterYaw;
 	float LastCharacterYaw;
-
+	TMap<ECharacterAnimationSlots, FName> SlotNames;
+	
 	void CheckMovement();
 	void TurnInPlace();
-
-
-	TMap<ECharacterAnimationSlots, FName> SlotNames;
 };
