@@ -8,8 +8,14 @@
 void FAutoAimState::Begin()
 {
 	FMechanicStateBase::Begin();
-	MechanicsStateMachine->GetCharacterAnimations()->SetAttackState(ECharacterAttackState::Aiming);
 	CharacterMechanics->SetAutoAimTargets();
+	if(!CharacterMechanics->IsThereAnyTarget())
+	{
+		MechanicsStateMachine->SetAimReadyState();
+		return;
+	}
+	
+	MechanicsStateMachine->GetCharacterAnimations()->SetAttackState(ECharacterAttackState::Aiming);
 
 	MechanicsStateMachine->StartShootingDelegate.AddRaw(this, &FAutoAimState::DrawArrowAndStartPrecisionCount);
 	MechanicsStateMachine->StopShootingDelegate.AddRaw(CharacterMechanics, &FCharacterMechanics::ReleaseArrow);

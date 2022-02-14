@@ -13,6 +13,8 @@ public:
 	void AutoAim();
 	void AutoAimGamepad();
 	void SetAutoAimTargets() const;
+	bool IsThereAnyTarget() const;
+
 	void FreeAim() const;
 	void FreeAimGamepad() const;
 	void PrecisionAim(const FVector TargetLocation) const;

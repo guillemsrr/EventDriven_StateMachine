@@ -3,6 +3,7 @@
 #include "ArchTrace.generated.h"
 
 class USlowTimeManager;
+class AEnemy;
 
 UCLASS()
 class ARCHER_API UArchTrace : public UActorComponent
@@ -23,8 +24,9 @@ public:
 	AActor* GetGamepadClosestTarget();
 	FVector2D GetActorScreenLocation(AActor* Target);
 
+	FORCEINLINE bool IsThereAnyTarget() const {return AutoAimTargets.Num() > 0;}
 	FORCEINLINE FRotator GetAimRotator() const { return AimDirection.Rotation(); }
-	FORCEINLINE void SetAutoAimTargets(TArray<AActor*> Targets) { AutoAimTargets = Targets; }
+	FORCEINLINE void SetAutoAimTargets(TArray<AEnemy*> Targets) { AutoAimTargets = Targets; }
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
@@ -45,7 +47,7 @@ private:
 	FVector AimDirection;
 	FVector TargetAimDirection;
 	USkeletalMeshSocket const* BowSocket;
-	TArray<AActor*> AutoAimTargets;
+	TArray<AEnemy*> AutoAimTargets;
 	AArcherPlayerController* PlayerController;
 	const float MAX_AIM_ANGLE = 5.f;
 	

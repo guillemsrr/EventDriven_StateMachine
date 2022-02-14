@@ -15,21 +15,14 @@ AEnemy::AEnemy()
 	bUseControllerRotationYaw = true;
 }
 
-// Called when the game starts or when spawned
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
-
-// Called every frame
 
 void AEnemy::Tick(float DeltaTime)
 {
-	if(!IsAlive())return;
-	
 	Super::Tick(DeltaTime);
-
 }
 
 void AEnemy::Hit()
@@ -44,6 +37,8 @@ void AEnemy::Hit()
 
 void AEnemy::Die()
 {
+	PrimaryActorTick.bCanEverTick = false;
+	
 	GetCapsuleComponent()->SetGenerateOverlapEvents(false);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 }

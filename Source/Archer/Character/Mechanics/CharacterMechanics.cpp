@@ -14,14 +14,18 @@ FCharacterMechanics::FCharacterMechanics(UArchTrace* ArchTrace, UCharacterAnimat
 void FCharacterMechanics::AutoAim()
 {
 	AActor* ClosestTarget = GetMouseClosestTarget();
+	
 	if (!ClosestTarget) return;
+	
 	ArchTrace->SetAimDirection(ClosestTarget);
 }
 
 void FCharacterMechanics::AutoAimGamepad()
 {
 	AActor* ClosestTarget = GetGamepadClosestTarget();
+	
 	if (!ClosestTarget) return;
+	
 	ArchTrace->SetAimDirection(ClosestTarget);
 }
 
@@ -57,9 +61,24 @@ AActor* FCharacterMechanics::GetGamepadClosestTarget() const
 
 void FCharacterMechanics::SetAutoAimTargets() const
 {
-	TArray<AActor*> Enemies;
-	UGameplayStatics::GetAllActorsOfClass(ArchTrace->GetWorld(), AEnemy::StaticClass(), Enemies);
-	ArchTrace->SetAutoAimTargets(Enemies);
+	TArray<AActor*> EnemyActors;
+	TArray<AEnemy*> AliveEnemies;
+	UGameplayStatics::GetAllActorsOfClass(ArchTrace->GetWorld(), AEnemy::StaticClass(), EnemyActors);
+	
+	for (int EnemyIndex = EnemyActors.Num() - 1; EnemyIndex >= 0; EnemyIndex--)
+	{
+		AEnemy* Enemy = Cast<AEnemy, AActor>(EnemyActors[EnemyIndex]);
+		if(Enemy->IsAlive())
+		{
+			AliveEnemies.Add(Enemy);
+		}
+	}
+	ArchTrace->SetAutoAimTargets(AliveEnemies);
+}
+
+bool FCharacterMechanics::IsThereAnyTarget() const
+{
+	return ArchTrace->IsThereAnyTarget();
 }
 
 void FCharacterMechanics::DrawArrow(FTimerDelegate TimerDelegate)

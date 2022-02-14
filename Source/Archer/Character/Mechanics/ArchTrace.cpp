@@ -1,7 +1,7 @@
 ﻿#include "ArchTrace.h"
 
 #include "DrawDebugHelpers.h"
-#include "Archer/Enemies/Enemy.h"
+#include "Archer/Enemies/Enemy.h" 
 #include "Archer/TimeManagement/SlowTimeManager.h"
 #include "Archer/Utilities/Debug.h"
 #include "Archer/Weapons/Projectile.h"
@@ -175,8 +175,10 @@ AActor* UArchTrace::GetGamepadClosestTarget()
 	float ShortestDistance = TNumericLimits<float>::Max();
 	if (StickPosition == FVector2D(0))
 	{
-		for (AActor* AutoAimTarget : AutoAimTargets)
+		for (AEnemy* AutoAimTarget : AutoAimTargets)
 		{
+			if(!AutoAimTarget->IsAlive()) continue;
+
 			FVector2D TargetScreenLocation = GetActorScreenLocation(AutoAimTarget);
 			float Distance = (PlayerScreenLocation - TargetScreenLocation).Size();
 
@@ -241,8 +243,10 @@ TArray<AActor*> UArchTrace::GetClosestTargetInPlayerDirection(FVector2D PlayerSc
 	TArray<AActor*> ClosestTargets;
 	AActor* ClosestTarget = nullptr;
 	float SmallestAngle = TNumericLimits<float>::Max();
-	for (AActor* Target : AutoAimTargets)
+	for (AEnemy* Target : AutoAimTargets)
 	{
+		if(!Target->IsAlive()) continue;
+		
 		FVector2D TargetScreenLocation = GetActorScreenLocation(Target);
 		FVector2D Direction = TargetScreenLocation - PlayerScreenLocation;
 		Direction.Normalize();
@@ -261,7 +265,7 @@ TArray<AActor*> UArchTrace::GetClosestTargetInPlayerDirection(FVector2D PlayerSc
 		}
 	}
 
-	if (ClosestTargets.Num() == 0)
+	if (ClosestTargets.Num() == 0 && ClosestTarget)
 	{
 		ClosestTargets.Add(ClosestTarget);
 	}
