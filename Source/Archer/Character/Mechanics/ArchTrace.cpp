@@ -84,7 +84,6 @@ void UArchTrace::FreeAim()
 
 	FVector StartPosition = BowSocket->GetSocketLocation(SkeletalMeshComponent);
 	float Distance = UKismetMathLibrary::Vector_Distance(mouseHitResult.Location, StartPosition);
-	//GEngine->AddOnScreenDebugMessage(-1, -1, FColor::Yellow, TEXT("Distance: " + FString::SanitizeFloat(Distance)));
 
 	if (Distance < 200.f)
 	{
@@ -192,7 +191,6 @@ AActor* UArchTrace::GetGamepadClosestTarget()
 	}
 
 	FVector2D PlayerDirection = StickPosition;
-//	GEngine->AddOnScreenDebugMessage(-1, -1, FColor::Yellow, TEXT("Stick direction: " +PlayerDirection.ToString()));
 
 	TArray<AActor*> ClosestTargets = GetClosestTargetInPlayerDirection(PlayerScreenLocation, PlayerDirection);
 	GEngine->AddOnScreenDebugMessage(-1, -1, FColor::Yellow, TEXT("Number targets: " + FString::FromInt(ClosestTargets.Num())));
@@ -240,8 +238,6 @@ TArray<AActor*> UArchTrace::GetClosestTargetInPlayerDirection(FVector2D PlayerSc
 {
 	PlayerDirection.Normalize();
 
-	//GEngine->AddOnScreenDebugMessage(-1, -1, FColor::Green, TEXT("Stick direction: " +PlayerDirection.ToString()));
-	
 	TArray<AActor*> ClosestTargets;
 	AActor* ClosestTarget = nullptr;
 	float SmallestAngle = TNumericLimits<float>::Max();
@@ -250,10 +246,8 @@ TArray<AActor*> UArchTrace::GetClosestTargetInPlayerDirection(FVector2D PlayerSc
 		FVector2D TargetScreenLocation = GetActorScreenLocation(Target);
 		FVector2D Direction = TargetScreenLocation - PlayerScreenLocation;
 		Direction.Normalize();
-		//GEngine->AddOnScreenDebugMessage(-1, -1, FColor::Yellow, TEXT("target direction: " + Direction.ToString()));
 		
 		float AimAtAngle = FMath::RadiansToDegrees(acosf(FVector2D::DotProduct(PlayerDirection, Direction)));
-		//GEngine->AddOnScreenDebugMessage(-1, -1, FColor::Green, TEXT("AimAtAngle: " + FString::SanitizeFloat(AimAtAngle)));
 
 		if (AimAtAngle < MAX_AIM_ANGLE)
 		{
