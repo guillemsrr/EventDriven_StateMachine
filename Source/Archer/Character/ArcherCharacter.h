@@ -4,6 +4,9 @@
 #include "CharacterBase.h"
 
 #include "Animation/CharacterAnimations.h"
+
+#include "Archer/Player/ArcherPlayerController.h"
+
 #include "GameFramework/Character.h"
 #include "Mechanics/CharacterMechanics.h"
 #include "Movement/CharacterMovement.h"
@@ -38,6 +41,7 @@ public:
 	FORCEINLINE FCharacterMovement* GetArcherMovement() const { return ArcherMovement; }
 	FORCEINLINE UCharacterAnimations* GetArcherAnimations() const { return CharacterAnimations; }
 	FORCEINLINE FMechanicsStateMachine* GetMechanicsStateMachine() const { return MechanicsStateMachine; }
+	FORCEINLINE AArcherPlayerController* GetPlayerController() const { return PlayerController; }
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
@@ -58,6 +62,7 @@ private:
 	FMechanicsStateMachine* MechanicsStateMachine;
 	FCharacterMovement* ArcherMovement;
 	FCharacterMechanics* CharacterMechanics;
+	AArcherPlayerController* PlayerController;
 
 	void MoveForward(float Value);
 	void MoveRight(float Value);

@@ -3,6 +3,8 @@
 #include "Animation/CharacterAnimInstance.h"
 #include "Archer/Camera/PrecisionCameraActor.h"
 #include "Archer/TimeManagement/SlowTimeManager.h"
+#include "Archer/Utilities/Debug.h"
+
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -12,6 +14,8 @@
 #include "Mechanics/CharacterMechanics.h"
 #include "StateMachines/Locomotion/LocomotionStateMachine.h"
 #include "StateMachines/Mechanics/MechanicsStateMachine.h"
+
+PRAGMA_DISABLE_OPTIMIZATION
 
 AArcherCharacter::AArcherCharacter()
 {
@@ -23,6 +27,7 @@ AArcherCharacter::AArcherCharacter()
 	LocomotionStateMachine = new FLocomotionStateMachine(this);
 	MechanicsStateMachine = new FMechanicsStateMachine(this);
 
+	
 	bUseControllerRotationYaw = false;
 }
 
@@ -47,11 +52,11 @@ void AArcherCharacter::BeginPlay()
 	APrecisionCameraActor* Camera = GetWorld()->SpawnActor<APrecisionCameraActor>(
 		APrecisionCameraActor::StaticClass(), GetActorLocation() + FVector(20, 0, 0), GetActorRotation());
 	Camera->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
-
 	Arch->SetBowSocket(GetMesh());
 	CharacterAnimations->Initialize(Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance()));
 	CharacterMechanics->SetProjectile(ProjectileClass);
 	ArcherMovement->SetCameraManager(UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0));
+	PlayerController = static_cast<AArcherPlayerController*>(UGameplayStatics::GetPlayerController(this, 0));
 }
 
 void AArcherCharacter::TickActor(float DeltaTime, ELevelTick Tick, FActorTickFunction& ThisTickFunction)
@@ -156,10 +161,12 @@ void AArcherCharacter::StopFreeAim()
 
 void AArcherCharacter::PrecisionAimX(float Value)
 {
-	MechanicsStateMachine->PrecisionXDelegate.Broadcast(Value);
+	MechanicsStateMachine->AimXValueDelegate.Broadcast(Value);
 }
 
 void AArcherCharacter::PrecisionAimY(float Value)
 {
-	MechanicsStateMachine->PrecisionYDelegate.Broadcast(Value);
+	MechanicsStateMachine->AimYValueDelegate.Broadcast(Value);
 }
+
+PRAGMA_ENABLE_OPTIMIZATION
