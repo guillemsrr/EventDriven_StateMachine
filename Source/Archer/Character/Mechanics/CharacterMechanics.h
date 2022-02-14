@@ -11,10 +11,13 @@ public:
 	FCharacterMechanics(UArchTrace* ArchTrace, UCharacterAnimations* characterAnimations);
 
 	void AutoAim();
+	void AutoAimGamepad();
 	void SetAutoAimTargets() const;
 	void FreeAim() const;
+	void FreeAimGamepad() const;
 	void PrecisionAim(const FVector TargetLocation) const;
-	AActor* GetClosestTarget() const;
+	AActor* GetMouseClosestTarget() const;
+	AActor* GetGamepadClosestTarget() const;
 	void DrawArrow(FTimerDelegate TimerDelegate);
 	void ReleaseArrow();
 	void StopDrawingArrow();

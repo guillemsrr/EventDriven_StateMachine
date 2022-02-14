@@ -13,7 +13,14 @@ FCharacterMechanics::FCharacterMechanics(UArchTrace* ArchTrace, UCharacterAnimat
 
 void FCharacterMechanics::AutoAim()
 {
-	AActor* ClosestTarget = GetClosestTarget();
+	AActor* ClosestTarget = GetMouseClosestTarget();
+	if (!ClosestTarget) return;
+	ArchTrace->SetAimDirection(ClosestTarget);
+}
+
+void FCharacterMechanics::AutoAimGamepad()
+{
+	AActor* ClosestTarget = GetGamepadClosestTarget();
 	if (!ClosestTarget) return;
 	ArchTrace->SetAimDirection(ClosestTarget);
 }
@@ -23,9 +30,14 @@ void FCharacterMechanics::FreeAim() const
 	ArchTrace->FreeAim();
 }
 
+void FCharacterMechanics::FreeAimGamepad() const
+{
+	ArchTrace->FreeAim();
+}
+
 void FCharacterMechanics::PrecisionAim(const FVector TargetLocation) const
 {
-	ArchTrace->SetAimDirection(TargetLocation);
+	ArchTrace->SetAimDirectionToTargetPosition(TargetLocation);
 }
 
 void FCharacterMechanics::InterpolateAimDirection(float DeltaTime) const
@@ -33,9 +45,14 @@ void FCharacterMechanics::InterpolateAimDirection(float DeltaTime) const
 	ArchTrace->SetInterpolatedAimDirection(DeltaTime);
 }
 
-AActor* FCharacterMechanics::GetClosestTarget() const
+AActor* FCharacterMechanics::GetMouseClosestTarget() const
 {
-	return ArchTrace->GetClosestTarget();
+	return ArchTrace->GetMouseClosestTarget();
+}
+
+AActor* FCharacterMechanics::GetGamepadClosestTarget() const
+{
+	return ArchTrace->GetGamepadClosestTarget();
 }
 
 void FCharacterMechanics::SetAutoAimTargets() const
@@ -57,7 +74,8 @@ void FCharacterMechanics::ReleaseArrow()
 	StopDrawingArrow();
 	CharacterAnimations->SetAttackState(ECharacterAttackState::Release);
 	ArchTrace->Shoot(ProjectileClass);
-	//after some timer, it should go back to aiming/ normal
+	
+	//TODO after some timer, it should go back to aiming/ normal
 }
 
 void FCharacterMechanics::StopDrawingArrow()

@@ -3,6 +3,7 @@
 #include "DrawDebugHelpers.h"
 #include "Archer/Enemies/Enemy.h"
 #include "Archer/TimeManagement/SlowTimeManager.h"
+#include "Archer/Utilities/Debug.h"
 #include "Archer/Weapons/Projectile.h"
 
 #include "Engine/SkeletalMeshSocket.h"
@@ -22,16 +23,10 @@ void UArchTrace::BeginPlay()
 	Super::BeginPlay();
 	Owner = GetOwner();
 	InitializeCollisionTypes();
-	//SetBowSocket();
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("BeginPlay ARCHTRACE"));
-}
 
-void UArchTrace::InitializeComponent()
-{
-	Super::InitializeComponent();
-	Owner = GetOwner();
-	InitializeCollisionTypes();
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("InitializeComponent ARCHTRACE"));
+	PlayerController = static_cast<AArcherPlayerController*>(UGameplayStatics::GetPlayerController(this, 0));
+
+	//SetBowSocket();
 }
 
 void UArchTrace::Initialize(USlowTimeManager* TimeManager)
@@ -44,12 +39,13 @@ void UArchTrace::SetInterpolatedAimDirection(float DeltaTime)
 	AimDirection = UKismetMathLibrary::VInterpTo(AimDirection, TargetAimDirection, DeltaTime, AimInterpolationSpeed);
 
 	FVector StartPosition = BowSocket->GetSocketLocation(SkeletalMeshComponent);
-	DrawDebugLine(GetWorld(), StartPosition, StartPosition+AimDirection*1000.0f, FColor::Green, false, 0.01f, 0.f, 10.f);
+	DrawDebugLine(GetWorld(), StartPosition, StartPosition + AimDirection * 1000.0f, FColor::Green, false, 0.01f, 0.f,
+	              10.f);
 }
 
 void UArchTrace::InitializeCollisionTypes()
 {
-	TArray<TEnumAsByte<enum EObjectTypeQuery>> CollisionTypes;
+	TArray<TEnumAsByte<EObjectTypeQuery>> CollisionTypes;
 	CollisionTypes.Emplace(ECollisionChannel::ECC_PhysicsBody);
 	CollisionTypes.Emplace(ECollisionChannel::ECC_WorldStatic);
 	CollisionTypes.Emplace(ECollisionChannel::ECC_WorldDynamic);
@@ -68,8 +64,7 @@ void UArchTrace::SetBowSocket(USkeletalMeshComponent* skeletalMeshComponent)
 
 void UArchTrace::GetMouseLocationAndDirection(FVector& WorldLocation, FVector& WorldDirection)
 {
-	UGameplayStatics::GetPlayerController(GetWorld(), 0)->DeprojectMousePositionToWorld(
-		WorldLocation, WorldDirection);
+	PlayerController->DeprojectMousePositionToWorld(WorldLocation, WorldDirection);
 }
 
 //TODO -> use PlayerController's GetHitUnderCursor ?¿
@@ -107,13 +102,14 @@ void UArchTrace::FreeAim()
 	FVector hitResultLocation = hitResult.Location;
 	TargetAimDirection = hitResultLocation - StartPosition;
 	TargetAimDirection.Normalize();
-	
+
 	DrawDebugPoint(GetWorld(), hitResult.Location, 10.f, FColor::Green);
 	DrawDebugLine(GetWorld(), StartPosition, hitResultLocation, FColor::Red, false, 0.01f, 0.f, 10.f);
-	DrawDebugLine(GetWorld(), hitResultLocation, hitResultLocation + FVector(0, 0, -10000.f), FColor::Red, false, 0.01f, 0.f, 10.f);
+	DrawDebugLine(GetWorld(), hitResultLocation, hitResultLocation + FVector(0, 0, -10000.f), FColor::Red, false, 0.01f,
+	              0.f, 10.f);
 }
 
-void UArchTrace::SetAimDirection(const FVector TargetLocation)
+void UArchTrace::SetAimDirectionToTargetPosition(const FVector TargetLocation)
 {
 	FVector StartPosition = BowSocket->GetSocketLocation(SkeletalMeshComponent);
 	TargetAimDirection = TargetLocation - StartPosition;
@@ -124,49 +120,42 @@ void UArchTrace::SetAimDirection(const FVector TargetLocation)
 
 void UArchTrace::SetAimDirection(const AActor* ClosestTarget)
 {
-	SetAimDirection(ClosestTarget->GetActorLocation());
+	SetAimDirectionToTargetPosition(ClosestTarget->GetActorLocation());
 }
 
-void UArchTrace::GetPlayerMousePositionAndDirection(FVector2D& PlayerScreenLocation, FVector2D& PlayerDirection)
+FVector2D UArchTrace::GetPlayerScreenPosition() const
+{
+	FVector2D PlayerScreenLocation;
+	FVector StartPosition = BowSocket->GetSocketLocation(SkeletalMeshComponent);
+	PlayerController->ProjectWorldLocationToScreen(
+		StartPosition, PlayerScreenLocation, true);
+
+	return PlayerScreenLocation;
+}
+
+AActor* UArchTrace::GetMouseClosestTarget()
 {
 	float MouseX;
 	float MouseY;
-	UGameplayStatics::GetPlayerController(this, 0)->GetMousePosition(MouseX, MouseY);
+	PlayerController->GetMousePosition(MouseX, MouseY);
 	FVector2D MousePosition = FVector2D(MouseX, MouseY);
 
-	FVector StartPosition = BowSocket->GetSocketLocation(SkeletalMeshComponent);
-	UGameplayStatics::GetPlayerController(this, 0)->ProjectWorldLocationToScreen(
-		StartPosition, PlayerScreenLocation, true);
-
-	PlayerDirection = MousePosition - PlayerScreenLocation;
+	FVector2D PlayerScreenLocation = GetPlayerScreenPosition();
+	FVector2D PlayerDirection = MousePosition - PlayerScreenLocation;
 	PlayerDirection.Normalize();
-}
 
-AActor* UArchTrace::GetClosestTarget()
-{
-	FVector2D PlayerScreenLocation;
-	FVector2D PlayerDirection;
-	GetPlayerMousePositionAndDirection(PlayerScreenLocation, PlayerDirection);
+	TArray<AActor*> ClosestTargets = GetClosestTargetInPlayerDirection(PlayerScreenLocation, PlayerDirection);
 
-	return GetClosestTargetInPlayerDirection(PlayerScreenLocation, PlayerDirection);
-}
-
-AActor* UArchTrace::GetClosestTargetInPlayerDirection(FVector2D PlayerScreenLocation, FVector2D PlayerDirection)
-{
-	float SmallestAngle = TNumericLimits<float>::Max();
+	float ShortestDistance = TNumericLimits<float>::Max();
 	AActor* ClosestTarget = nullptr;
-	for (AActor* Target : AutoAimTargets)
+	for (AActor* Target : ClosestTargets)
 	{
-		FVector2D TargetScreenLocation;
-		UGameplayStatics::GetPlayerController(this, 0)->ProjectWorldLocationToScreen(
-			Target->GetActorLocation(), TargetScreenLocation, true);
+		FVector2D TargetScreenLocation = GetActorScreenLocation(Target);
 
-		FVector2D Direction = TargetScreenLocation - PlayerScreenLocation;
-		Direction.Normalize();
-		float AimAtAngle = FMath::RadiansToDegrees(acosf(FVector2D::DotProduct(PlayerDirection, Direction)));
-		if (AimAtAngle < SmallestAngle)
+		float Distance = (MousePosition - TargetScreenLocation).SizeSquared();
+		if (Distance < ShortestDistance)
 		{
-			SmallestAngle = AimAtAngle;
+			ShortestDistance = Distance;
 			ClosestTarget = Target;
 		}
 	}
@@ -174,10 +163,121 @@ AActor* UArchTrace::GetClosestTargetInPlayerDirection(FVector2D PlayerScreenLoca
 	return ClosestTarget;
 }
 
+AActor* UArchTrace::GetGamepadClosestTarget()
+{
+	FVector2D PlayerScreenLocation = GetPlayerScreenPosition();
+
+	float StickX;
+	float StickY;
+	PlayerController->GetInputAnalogStickState(EControllerAnalogStick::CAS_RightStick, StickX, StickY);
+	FVector2D StickPosition = FVector2D(StickX, StickY);
+
+	AActor* ClosestTarget = nullptr;
+	float ShortestDistance = TNumericLimits<float>::Max();
+	if (StickPosition == FVector2D(0))
+	{
+		for (AActor* AutoAimTarget : AutoAimTargets)
+		{
+			FVector2D TargetScreenLocation = GetActorScreenLocation(AutoAimTarget);
+			float Distance = (PlayerScreenLocation - TargetScreenLocation).Size();
+
+			if (Distance < ShortestDistance)
+			{
+				ShortestDistance = Distance;
+				ClosestTarget = AutoAimTarget;
+			}
+		}
+
+		return ClosestTarget;
+	}
+
+	FVector2D PlayerDirection = StickPosition;
+//	GEngine->AddOnScreenDebugMessage(-1, -1, FColor::Yellow, TEXT("Stick direction: " +PlayerDirection.ToString()));
+
+	TArray<AActor*> ClosestTargets = GetClosestTargetInPlayerDirection(PlayerScreenLocation, PlayerDirection);
+	GEngine->AddOnScreenDebugMessage(-1, -1, FColor::Yellow, TEXT("Number targets: " + FString::FromInt(ClosestTargets.Num())));
+
+	TArray<float> TargetDistances;
+	float MaxDistance = 0;
+
+	for (AActor* Target : ClosestTargets)
+	{
+		FVector2D TargetScreenLocation = GetActorScreenLocation(Target);
+		float Distance = (PlayerScreenLocation - TargetScreenLocation).Size();
+		TargetDistances.Add(Distance);
+		if (Distance > MaxDistance)
+		{
+			MaxDistance = Distance;
+		}
+	}
+
+	float ShortestRelativeDistance = TNumericLimits<float>::Max();
+	float StickWeight = StickPosition.Size();
+	
+	for (int i = 0; i < ClosestTargets.Num(); i++)
+	{
+		float RelativeDistance = UKismetMathLibrary::Abs(StickWeight - (TargetDistances[i] / MaxDistance));
+		if (RelativeDistance < ShortestRelativeDistance)
+		{
+			ShortestRelativeDistance = RelativeDistance;
+			ClosestTarget = ClosestTargets[i];
+		}
+	}
+
+	return ClosestTarget;
+}
+
+FVector2D UArchTrace::GetActorScreenLocation(AActor* Target)
+{
+	FVector2D TargetScreenLocation;
+	PlayerController->ProjectWorldLocationToScreen(
+		Target->GetActorLocation(), TargetScreenLocation, true);
+
+	return TargetScreenLocation;
+}
+
+TArray<AActor*> UArchTrace::GetClosestTargetInPlayerDirection(FVector2D PlayerScreenLocation, FVector2D PlayerDirection)
+{
+	PlayerDirection.Normalize();
+
+	//GEngine->AddOnScreenDebugMessage(-1, -1, FColor::Green, TEXT("Stick direction: " +PlayerDirection.ToString()));
+	
+	TArray<AActor*> ClosestTargets;
+	AActor* ClosestTarget = nullptr;
+	float SmallestAngle = TNumericLimits<float>::Max();
+	for (AActor* Target : AutoAimTargets)
+	{
+		FVector2D TargetScreenLocation = GetActorScreenLocation(Target);
+		FVector2D Direction = TargetScreenLocation - PlayerScreenLocation;
+		Direction.Normalize();
+		//GEngine->AddOnScreenDebugMessage(-1, -1, FColor::Yellow, TEXT("target direction: " + Direction.ToString()));
+		
+		float AimAtAngle = FMath::RadiansToDegrees(acosf(FVector2D::DotProduct(PlayerDirection, Direction)));
+		//GEngine->AddOnScreenDebugMessage(-1, -1, FColor::Green, TEXT("AimAtAngle: " + FString::SanitizeFloat(AimAtAngle)));
+
+		if (AimAtAngle < MAX_AIM_ANGLE)
+		{
+			ClosestTargets.Add(Target);
+		}
+
+		if (AimAtAngle < SmallestAngle)
+		{
+			SmallestAngle = AimAtAngle;
+			ClosestTarget = Target;
+		}
+	}
+
+	if (ClosestTargets.Num() == 0)
+	{
+		ClosestTargets.Add(ClosestTarget);
+	}
+	return ClosestTargets;
+}
+
 void UArchTrace::Shoot(TSubclassOf<AProjectile> ProjectileTemplate)
 {
 	FRotator ProjectileRotation = TargetAimDirection.Rotation();
-	FVector ProjectileLocation = BowSocket->GetSocketLocation(SkeletalMeshComponent) + TargetAimDirection*10.f;
+	FVector ProjectileLocation = BowSocket->GetSocketLocation(SkeletalMeshComponent) + TargetAimDirection * 10.f;
 
 	UWorld* World = GetWorld();
 	if (!World) return;

@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "Archer/Player/ArcherPlayerController.h"
 #include "ArchTrace.generated.h"
 
 class USlowTimeManager;
@@ -10,16 +11,17 @@ class ARCHER_API UArchTrace : public UActorComponent
 public:
 	UArchTrace();
 
-	virtual void InitializeComponent() override;
 	void Initialize(USlowTimeManager* TimeManager);
 	void SetInterpolatedAimDirection(float DeltaTime);
 	void SetBowSocket(USkeletalMeshComponent* skeletalMeshComponent);
 	void FreeAim();
 	void SetAimDirection(const AActor* ClosestTarget);
-	void SetAimDirection(const FVector TargetLocation);
+	void SetAimDirectionToTargetPosition(const FVector TargetLocation);
 	void Shoot(TSubclassOf<class AProjectile> Projectile);
 	void GetMouseLocationAndDirection(FVector& WorldLocation, FVector& WorldDirection);
-	AActor* GetClosestTarget();
+	AActor* GetMouseClosestTarget();
+	AActor* GetGamepadClosestTarget();
+	FVector2D GetActorScreenLocation(AActor* Target);
 
 	FORCEINLINE FRotator GetAimRotator() const { return AimDirection.Rotation(); }
 	FORCEINLINE void SetAutoAimTargets(TArray<AActor*> Targets) { AutoAimTargets = Targets; }
@@ -44,10 +46,13 @@ private:
 	FVector TargetAimDirection;
 	USkeletalMeshSocket const* BowSocket;
 	TArray<AActor*> AutoAimTargets;
+	AArcherPlayerController* PlayerController;
+	const float MAX_AIM_ANGLE = 5.f;
 	
 	FHitResult LineTraceFromStartToEnd(FVector start, FVector end) const;
 	void InitializeCollisionTypes();
 
-	void GetPlayerMousePositionAndDirection(FVector2D& PlayerScreenLocation, FVector2D& PlayerDirection);
-	AActor* GetClosestTargetInPlayerDirection(FVector2D PlayerScreenLocation, FVector2D PlayerDirection);
+	FVector2D GetPlayerScreenPosition() const;
+	void GetPlayerStickPositionAndDirection(float& PlayerScreenLocation, FVector2D& PlayerDirection);
+	TArray<AActor*> GetClosestTargetInPlayerDirection(FVector2D PlayerScreenLocation, FVector2D PlayerDirection);
 };
