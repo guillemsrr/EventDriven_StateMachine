@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include "MechanicStateBase.h"
 
+#include "Archer/Character/StateMachines/StateMachineBase.h"
+
 class FAutoAimState: public FMechanicStateBase
 {
 public:
@@ -13,5 +15,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
+	ActionSignature TickDelegate;
+	
 	void DrawArrowAndStartPrecisionCount();
 };

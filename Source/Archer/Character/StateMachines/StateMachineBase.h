@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include "StateBase.h"
 
+#include "Archer/Player/ArcherPlayerController.h"
+
 class AArcherCharacter;
 class FCharacterMovement;
 class FCharacterMechanics;
@@ -20,6 +22,7 @@ public:
 	FCharacterMechanics* GetCharacterMechanics() const;
 	UCharacterAnimations* GetCharacterAnimations() const;
 	UWorld* GetWorld() const;
+	bool IsPlayerUsingGamepad() const;
 
 protected:
 	AArcherCharacter* ArcherCharacter;

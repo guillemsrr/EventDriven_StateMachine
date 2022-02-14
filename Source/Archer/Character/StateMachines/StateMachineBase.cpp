@@ -26,3 +26,8 @@ UWorld* FStateMachineBase::GetWorld() const
 {
 	return ArcherCharacter->GetWorld();
 }
+
+bool FStateMachineBase::IsPlayerUsingGamepad() const
+{
+	return ArcherCharacter->GetPlayerController()->IsPlayerUsingGamepad;
+}

@@ -15,6 +15,15 @@ void FFreeAimState::Begin()
 	MechanicsStateMachine->StopFreeAimDelegate.AddRaw(MechanicsStateMachine, &FMechanicsStateMachine::SetAutoAimState);
 
 	MechanicsStateMachine->GetCharacterAnimations()->SetOrientationType(EOrientationType::AimDirection);
+
+	if (MechanicsStateMachine->IsPlayerUsingGamepad())
+	{
+		TickDelegate.AddRaw(CharacterMechanics, &FCharacterMechanics::FreeAimGamepad);
+	}
+	else
+	{
+		TickDelegate.AddRaw(CharacterMechanics, &FCharacterMechanics::FreeAim);
+	}
 }
 
 void FFreeAimState::End()
@@ -28,7 +37,7 @@ void FFreeAimState::End()
 
 void FFreeAimState::Tick(float DeltaTime)
 {
-	CharacterMechanics->FreeAim();
+	TickDelegate.Broadcast();
 	CharacterMechanics->InterpolateAimDirection(DeltaTime);
 	GEngine->AddOnScreenDebugMessage(0, -1, FColor::Green, "Free Aim");
 }

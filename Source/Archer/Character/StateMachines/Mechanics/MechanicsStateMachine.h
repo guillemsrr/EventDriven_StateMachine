@@ -6,6 +6,16 @@ class FMechanicsStateMachine: public FStateMachineBase
 public:
 	explicit FMechanicsStateMachine(AArcherCharacter* ArcherCharacter);
 
+	ActionSignature StartAimingDelegate;
+	ActionSignature StopAimingDelegate;
+	ActionSignature StartShootingDelegate;
+	ActionSignature StopShootingDelegate;
+	ActionSignature StartFreeAimDelegate;
+	ActionSignature StopFreeAimDelegate;
+
+	MovementSignature AimXValueDelegate;
+	MovementSignature AimYValueDelegate;
+	
 	void Tick(float DeltaTime);
 	
 	void SetEmptyState();
@@ -13,15 +23,6 @@ public:
 	void SetFreeAimState();
 	void SetAutoAimState();
 	void SetPrecisionAimState();
-
-	ActionSignature StartAimingDelegate;
-	ActionSignature StopAimingDelegate;
-	ActionSignature StartShootingDelegate;
-	ActionSignature StopShootingDelegate;
-	ActionSignature StartFreeAimDelegate;
-	ActionSignature StopFreeAimDelegate;
-	MovementSignature PrecisionXDelegate;
-	MovementSignature PrecisionYDelegate;
 	
 protected:
 	virtual void SetSpecificState() override;
