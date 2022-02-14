@@ -5,6 +5,9 @@
 #include "Archer/Character/ArcherCharacter.h"
 #include "Archer/General/ArcherGameMode.h"
 #include "Archer/TimeManagement/SlowTimeManager.h"
+
+#include "GameFramework/PlayerInput.h"
+
 #include "Kismet/GameplayStatics.h"
 
 AArcherPlayerController::AArcherPlayerController()
@@ -23,7 +26,6 @@ void AArcherPlayerController::BeginPlay()
 	ArcherCharacter = Cast<AArcherCharacter>(GetCharacter());
 	CameraManager = Cast<AArcherPlayerCameraManager>(PlayerCameraManager);
 
-	if(!ArcherCharacter) return;
 	SetNormalMode();
 }
 
@@ -40,12 +42,12 @@ void AArcherPlayerController::InitInputSystem()
 {
 	Super::InitInputSystem();
 
-#if ARCHER_WITH_EDITOR
+/*#if ARCHER_WITH_EDITOR
 	// We need to reset it back
 	PlayerInput->SetBind(TEXT("F1"), TEXT("viewmode wireframe"));
 	PlayerInput->SetBind(TEXT("F9"), TEXT("shot showui"));
 	PlayerInput->SetBind(TEXT("F5"), TEXT("viewmode ShaderComplexity"));
-#endif
+#endif*/
 }
 
 void AArcherPlayerController::OnSlowModePressed()
@@ -90,6 +92,8 @@ void AArcherPlayerController::SetNormalMode()
 	CurrentGameMode->SetCurrentGameplayMode(AArcherGameMode::Normal);
 	ArcherCharacter->EnableInput(this);
 	ArcherCharacter->EnableMovement();
+	//ArcherCharacter->EnableInput(this);
+
 	SlowTimeManager->SetGlobalTimeDilation();
 	CameraManager->SetNormalCameraView();
 }
@@ -98,8 +102,8 @@ void AArcherPlayerController::SetOrbitalMode()
 {
 	CurrentGameMode->SetCurrentGameplayMode(AArcherGameMode::Orbital);
 	ArcherCharacter->DisableMovement();
-
 	//ArcherCharacter->DisableInput(this);
+	
 	SlowTimeManager->SetSlowModeTimeDilation();
 	CameraManager->SetOrbitalCameraView();
 }

@@ -8,7 +8,7 @@ class AArcherCharacter;
 class AArcherGameMode;
 class USlowTimeManager;
 
-UCLASS()
+UCLASS(Blueprintable)
 class ARCHER_API AArcherPlayerController : public APlayerController
 {
 	GENERATED_BODY()
@@ -30,7 +30,11 @@ class ARCHER_API AArcherPlayerController : public APlayerController
 	void SetPrecisionMode();
 	void SetNormalMode();
 	void SetOrbitalMode();
-	
+
 public:
+
+	UPROPERTY(BlueprintReadWrite)
+	bool IsPlayerUsingGamepad;
+	
 	void Initialize();
 };
