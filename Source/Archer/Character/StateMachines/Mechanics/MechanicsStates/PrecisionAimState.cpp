@@ -20,11 +20,11 @@ void FPrecisionAimState::Begin()
 
 	if(MechanicsStateMachine->IsPlayerUsingGamepad())
 	{
-		TargetActor = CharacterMechanics->GetMouseClosestTarget();
+		TargetActor = CharacterMechanics->GetGamepadClosestTarget();
 	}
 	else
 	{
-		TargetActor = CharacterMechanics->GetGamepadClosestTarget();
+		TargetActor = CharacterMechanics->GetMouseClosestTarget();
 	}
 	MechanicsStateMachine->GetCharacterAnimations()->SetOrientationType(EOrientationType::AimDirection);
 }
