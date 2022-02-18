@@ -5,7 +5,7 @@
 class USlowTimeManager;
 class AEnemy;
 
-UCLASS()
+UCLASS(Blueprintable)
 class ARCHER_API UArchTrace : public UActorComponent
 {
 	GENERATED_BODY()
@@ -29,14 +29,19 @@ public:
 	FORCEINLINE void SetAutoAimTargets(TArray<AEnemy*> Targets) { AutoAimTargets = Targets; }
 
 protected:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FName BowSocketName;
 
-	UPROPERTY(EditDefaultsOnly)
 	USkeletalMeshComponent* SkeletalMeshComponent;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float AimInterpolationSpeed = 5.f;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float MaxAimAngle = 5.f;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	bool bAimOneMinimum = false;
 	
 	virtual void BeginPlay() override;
 
@@ -49,7 +54,6 @@ private:
 	USkeletalMeshSocket const* BowSocket;
 	TArray<AEnemy*> AutoAimTargets;
 	AArcherPlayerController* PlayerController;
-	const float MAX_AIM_ANGLE = 5.f;
 	
 	FHitResult LineTraceFromStartToEnd(FVector start, FVector end) const;
 	void InitializeCollisionTypes();

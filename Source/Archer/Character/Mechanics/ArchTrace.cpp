@@ -151,7 +151,7 @@ AActor* UArchTrace::GetMouseClosestTarget()
 	{
 		FVector2D TargetScreenLocation = GetActorScreenLocation(Target);
 
-		float Distance = (MousePosition - TargetScreenLocation).SizeSquared();
+		float Distance = (MousePosition - TargetScreenLocation).Size();
 		if (Distance < ShortestDistance)
 		{
 			ShortestDistance = Distance;
@@ -173,7 +173,7 @@ AActor* UArchTrace::GetGamepadClosestTarget()
 
 	AActor* ClosestTarget = nullptr;
 	float ShortestDistance = TNumericLimits<float>::Max();
-	if (StickPosition == FVector2D(0))
+	if (bAimOneMinimum && StickPosition == FVector2D(0))
 	{
 		for (AEnemy* AutoAimTarget : AutoAimTargets)
 		{
@@ -253,7 +253,7 @@ TArray<AActor*> UArchTrace::GetClosestTargetInPlayerDirection(FVector2D PlayerSc
 		
 		float AimAtAngle = FMath::RadiansToDegrees(acosf(FVector2D::DotProduct(PlayerDirection, Direction)));
 
-		if (AimAtAngle < MAX_AIM_ANGLE)
+		if (AimAtAngle < MaxAimAngle)
 		{
 			ClosestTargets.Add(Target);
 		}
@@ -265,7 +265,7 @@ TArray<AActor*> UArchTrace::GetClosestTargetInPlayerDirection(FVector2D PlayerSc
 		}
 	}
 
-	if (ClosestTargets.Num() == 0 && ClosestTarget)
+	if (bAimOneMinimum && ClosestTargets.Num() == 0 && ClosestTarget)
 	{
 		ClosestTargets.Add(ClosestTarget);
 	}
