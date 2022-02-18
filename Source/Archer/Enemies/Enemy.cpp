@@ -41,5 +41,6 @@ void AEnemy::Die()
 	
 	GetCapsuleComponent()->SetGenerateOverlapEvents(false);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	Controller->UnPossess();
 }
 
