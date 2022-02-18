@@ -44,13 +44,13 @@ public:
 	FORCEINLINE AArcherPlayerController* GetPlayerController() const { return PlayerController; }
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Archer")
 	UArchTrace* Arch;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Archer")
 	UCharacterAnimations* CharacterAnimations;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category= "Archer")
 	TSubclassOf<AProjectile> ProjectileClass;
 
 	virtual void BeginPlay() override;
