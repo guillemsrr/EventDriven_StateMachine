@@ -13,12 +13,15 @@ class ARCHER_API AOrbitalCameraActor : public AArcherCameraActorBase
 
 	AOrbitalCameraActor();
 
+public:
+	void SetPivotPoint(USceneComponent* PivotPoint);
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	float RotationSpeed = 1.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float Zoom = 100.f;
+	float Zoom = 1000.f;
 	
 	virtual void BeginPlay() override;
 	virtual void RotateCameraLeftRight(float Value) override;

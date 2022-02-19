@@ -12,6 +12,11 @@ AOrbitalCameraActor::AOrbitalCameraActor()
 {
 }
 
+void AOrbitalCameraActor::SetPivotPoint(USceneComponent* PivotPoint)
+{
+	SetActorLocation(PivotPoint->GetComponentLocation());
+}
+
 void AOrbitalCameraActor::BeginPlay()
 {
 	Super::BeginPlay();
@@ -22,8 +27,9 @@ void AOrbitalCameraActor::BeginPlay()
 	CameraManager->SetViewTarget(this);
 	CameraManager->SetCurrentCamera(this);
 	
-	Camera->SetRelativeLocation(FVector(-15*Zoom, 0, 15*Zoom));
+	Camera->SetRelativeLocation(FVector(-Zoom, 0, Zoom));
 	LookAtRoot();
+	RotateCameraLeftRight(45.f);
 }
 
 void AOrbitalCameraActor::LookAtRoot()
