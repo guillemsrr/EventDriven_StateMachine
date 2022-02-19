@@ -73,7 +73,12 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, TEXT("HIT"));
 		CharacterBase->Hit();
 	}
-
+	
+	if(Cast<AProjectile>(OtherActor))//two projectiles hit
+	{
+		return;
+	}
+	
 	Destroy();
 }
 
