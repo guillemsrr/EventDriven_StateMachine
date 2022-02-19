@@ -28,6 +28,7 @@ void FPrecisionAimState::Begin()
 	{
 		TargetActor = CharacterMechanics->GetMouseClosestTarget();
 	}
+	
 	MechanicsStateMachine->GetCharacterAnimations()->SetOrientationType(EOrientationType::AimDirection);
 }
 
@@ -35,6 +36,11 @@ void FPrecisionAimState::Tick(float DeltaTime)
 {
 	DEBUG_LOG_TICK("PrecisionAimState");
 
+	if(!TargetActor)
+	{
+		return;
+	}
+	
 	if(Offset.Size()>1000.f)
 	{
 		Offset = FVector(0);
