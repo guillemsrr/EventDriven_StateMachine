@@ -26,7 +26,6 @@ AArcherCharacter::AArcherCharacter()
 	CharacterMechanics = new FCharacterMechanics(Arch, CharacterAnimations);
 	LocomotionStateMachine = new FLocomotionStateMachine(this);
 	MechanicsStateMachine = new FMechanicsStateMachine(this);
-
 	
 	bUseControllerRotationYaw = false;
 }
@@ -41,7 +40,7 @@ AArcherCharacter::~AArcherCharacter()
 void AArcherCharacter::Initialize(USlowTimeManager* TimeManager)
 {
 	TimeManager->AddFreeTicker(this);
-	//Arch->Initialize(TimeManager);
+	TimeManager->AddFreeTicker(Arch);
 }
 
 void AArcherCharacter::BeginPlay()
@@ -75,7 +74,7 @@ void AArcherCharacter::EnableMovement() const
 void AArcherCharacter::DisableMovement() const
 {
 	LocomotionStateMachine->SetSlowmoState();
-	MechanicsStateMachine->SetEmptyState();
+	MechanicsStateMachine->SetAimReadyState();
 }
 
 FRotator AArcherCharacter::GetAimRotator() const

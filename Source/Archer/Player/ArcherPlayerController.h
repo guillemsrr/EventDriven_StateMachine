@@ -12,6 +12,15 @@ UCLASS(Blueprintable)
 class ARCHER_API AArcherPlayerController : public APlayerController
 {
 	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(BlueprintReadWrite)
+	bool IsPlayerUsingGamepad;
+	
+	void Initialize();
+
+private:
 	AArcherPlayerController();
 
 	AArcherGameMode* CurrentGameMode;
@@ -30,11 +39,4 @@ class ARCHER_API AArcherPlayerController : public APlayerController
 	void SetPrecisionMode();
 	void SetNormalMode();
 	void SetOrbitalMode();
-
-public:
-
-	UPROPERTY(BlueprintReadWrite)
-	bool IsPlayerUsingGamepad;
-	
-	void Initialize();
 };

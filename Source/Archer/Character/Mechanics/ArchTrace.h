@@ -12,7 +12,6 @@ class ARCHER_API UArchTrace : public UActorComponent
 public:
 	UArchTrace();
 
-	void Initialize(USlowTimeManager* TimeManager);
 	void SetInterpolatedAimDirection(float DeltaTime);
 	void SetBowSocket(USkeletalMeshComponent* skeletalMeshComponent);
 	void FreeAim();

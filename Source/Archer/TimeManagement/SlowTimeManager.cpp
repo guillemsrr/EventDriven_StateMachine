@@ -17,45 +17,26 @@ void USlowTimeManager::AddFreeTicker(UActorComponent* Ticker)
 
 void USlowTimeManager::SetGlobalTimeDilation()
 {
-	if(!TimeFreeActors.IsValidIndex(0))
-	{
-		return;
-	}
-
-	if(TimeFreeActors.Num() == 0)
-	{
-		return;
-	}	
-
-	if(TimeFreeActors[0] == nullptr) return;
-	if(TimeFreeActors[0]->GetWorld() == nullptr) return;
-	
-	UGameplayStatics::SetGlobalTimeDilation(TimeFreeActors[0], 1.f);
+	UGameplayStatics::SetGlobalTimeDilation(WorldContext->GetWorld(), NORMAL_TIME_DILATION);
 
 	for (AActor* Actor : TimeFreeActors)
 	{
-		//Actor->CustomTimeDilation = 1.f;
+		Actor->CustomTimeDilation = NORMAL_TIME_DILATION;
 	}
 
 	for (UActorComponent* ActorComponent : TimeFreeActorComponents)
 	{
-		//ActorComponent->Timedil(Delta);
+		//ActorComponent->Time(Delta);
 	}
 }
 
 void USlowTimeManager::SetSlowModeTimeDilation()
 {
-	if(TimeFreeActors[0] == nullptr) return;
-	if(TimeFreeActors[0]->GetWorld() == nullptr) return;
-	
-	//float Delta = TimeFreeActors[0]->GetWorld()->GetDeltaSeconds();
-	
-	//UGameplayStatics::SetGlobalTimeDilation(TimeFreeActors[0], 0.2f);
-	UGameplayStatics::SetGlobalTimeDilation(TimeFreeActors[0], 0.1f);
+	UGameplayStatics::SetGlobalTimeDilation(WorldContext->GetWorld(), SLOW_TIME_DILATION);
 
 	for (AActor* Actor : TimeFreeActors)
 	{
-		//Actor->CustomTimeDilation = 5.f;
+		Actor->CustomTimeDilation = 1/SLOW_TIME_DILATION;
 	}
 
 	for (UActorComponent* ActorComponent : TimeFreeActorComponents)

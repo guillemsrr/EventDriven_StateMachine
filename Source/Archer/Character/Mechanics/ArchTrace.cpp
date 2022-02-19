@@ -29,11 +29,6 @@ void UArchTrace::BeginPlay()
 	//SetBowSocket();
 }
 
-void UArchTrace::Initialize(USlowTimeManager* TimeManager)
-{
-	TimeManager->AddFreeTicker(this);
-}
-
 void UArchTrace::SetInterpolatedAimDirection(float DeltaTime)
 {
 	AimDirection = UKismetMathLibrary::VInterpTo(AimDirection, TargetAimDirection, DeltaTime, AimInterpolationSpeed);

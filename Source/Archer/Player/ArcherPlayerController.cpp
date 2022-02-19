@@ -14,8 +14,8 @@ AArcherPlayerController::AArcherPlayerController()
 {
 	PlayerCameraManagerClass = AArcherPlayerCameraManager::StaticClass();
 	bShowMouseCursor = true;
-	SlowTimeManager = NewObject<USlowTimeManager>();
 	bShouldPerformFullTickWhenPaused = true;
+	SlowTimeManager = CreateDefaultSubobject<USlowTimeManager>("Slow time manager");
 }
 
 void AArcherPlayerController::BeginPlay()
@@ -26,6 +26,7 @@ void AArcherPlayerController::BeginPlay()
 	ArcherCharacter = Cast<AArcherCharacter>(GetCharacter());
 	CameraManager = Cast<AArcherPlayerCameraManager>(PlayerCameraManager);
 
+	SlowTimeManager->SetWorldContext(this);
 	SetNormalMode();
 }
 
