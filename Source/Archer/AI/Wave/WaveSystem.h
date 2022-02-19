@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿// Copyright (c) Guillem Serra. All Rights Reserved.
+
+#pragma once
 
 #include "CoreMinimal.h"
 
@@ -13,7 +15,6 @@ class ARCHER_API AWaveSystem : public AActor
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
 	AWaveSystem();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -24,12 +25,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AEnemy> EnemyClass;
 	
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	void StartNextWave();
 
 public:
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 };

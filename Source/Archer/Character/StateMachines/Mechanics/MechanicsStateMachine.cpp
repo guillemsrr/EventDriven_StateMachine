@@ -1,4 +1,6 @@
-﻿#include "MechanicsStateMachine.h"
+﻿// Copyright (c) Guillem Serra. All Rights Reserved.
+
+#include "MechanicsStateMachine.h"
 
 #include "MechanicsStates/AimReadyState.h"
 #include "MechanicsStates/AutoAimState.h"

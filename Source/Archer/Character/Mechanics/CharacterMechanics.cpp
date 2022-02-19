@@ -1,4 +1,6 @@
-﻿#include "CharacterMechanics.h"
+﻿// Copyright (c) Guillem Serra. All Rights Reserved.
+
+#include "CharacterMechanics.h"
 
 #include "ArchTrace.h"
 #include "Archer/Character/Animation/CharacterAnimations.h"

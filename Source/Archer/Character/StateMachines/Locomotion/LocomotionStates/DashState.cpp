@@ -1,4 +1,6 @@
-﻿#include "DashState.h"
+﻿// Copyright (c) Guillem Serra. All Rights Reserved.
+
+#include "DashState.h"
 
 #include "Archer/Character/Animation/CharacterAnimations.h"
 #include "Archer/Character/StateMachines/Locomotion/LocomotionStateMachine.h"

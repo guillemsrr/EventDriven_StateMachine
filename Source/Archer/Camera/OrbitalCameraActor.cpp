@@ -1,3 +1,5 @@
+// Copyright (c) Guillem Serra. All Rights Reserved.
+
 #include "OrbitalCameraActor.h"
 
 #include "ArcherPlayerCameraManager.h"

@@ -1,3 +1,5 @@
+// Copyright (c) Guillem Serra. All Rights Reserved.
+
 #include "PrecisionCameraActor.h"
 #include "ArcherPlayerCameraManager.h"
 #include "Kismet/GameplayStatics.h"

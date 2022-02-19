@@ -1,4 +1,6 @@
-﻿#include "ArchTrace.h"
+﻿// Copyright (c) Guillem Serra. All Rights Reserved.
+
+#include "ArchTrace.h"
 
 #include "DrawDebugHelpers.h"
 #include "Archer/Enemies/Enemy.h" 

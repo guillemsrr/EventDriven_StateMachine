@@ -1,4 +1,6 @@
-﻿#include "SlowmoState.h"
+﻿// Copyright (c) Guillem Serra. All Rights Reserved.
+
+#include "SlowmoState.h"
 
 void FSlowmoState::Begin()
 {

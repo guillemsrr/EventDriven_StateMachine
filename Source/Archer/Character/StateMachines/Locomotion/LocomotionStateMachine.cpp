@@ -1,4 +1,6 @@
-﻿#include "LocomotionStateMachine.h"
+﻿// Copyright (c) Guillem Serra. All Rights Reserved.
+
+#include "LocomotionStateMachine.h"
 
 #include "Archer/Character/ArcherCharacter.h"
 #include "LocomotionStates/ClimbState.h"

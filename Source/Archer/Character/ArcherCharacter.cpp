@@ -1,10 +1,10 @@
+// Copyright (c) Guillem Serra. All Rights Reserved.
+
 #include "ArcherCharacter.h"
 
 #include "Animation/CharacterAnimInstance.h"
 #include "Archer/Camera/PrecisionCameraActor.h"
 #include "Archer/TimeManagement/SlowTimeManager.h"
-#include "Archer/Utilities/Debug.h"
-
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"

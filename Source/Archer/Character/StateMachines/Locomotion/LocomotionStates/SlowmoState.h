@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿// Copyright (c) Guillem Serra. All Rights Reserved.
+
+#pragma once
 #include "LocomotionStateBase.h"
 
 class FSlowmoState : public FLocomotionStateBase

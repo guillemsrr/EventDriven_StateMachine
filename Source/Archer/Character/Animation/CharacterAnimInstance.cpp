@@ -1,3 +1,5 @@
+// Copyright (c) Guillem Serra. All Rights Reserved.
+
 #include "CharacterAnimInstance.h"
 
 #include "Archer/Character/ArcherCharacter.h"

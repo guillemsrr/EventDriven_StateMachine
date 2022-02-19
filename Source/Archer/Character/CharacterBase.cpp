@@ -1,31 +1,23 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// Copyright (c) Guillem Serra. All Rights Reserved.
 
 #include "CharacterBase.h"
 
-// Sets default values
 ACharacterBase::ACharacterBase()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	Health = MAX_HEALTH;
-	
-	//GetCapsuleComponent()->over
 }
 
-// Called when the game starts or when spawned
 void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
-// Called every frame
 void ACharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 bool ACharacterBase::IsAlive() const

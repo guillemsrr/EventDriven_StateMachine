@@ -1,4 +1,6 @@
-﻿#include "CharacterAnimations.h"
+﻿// Copyright (c) Guillem Serra. All Rights Reserved.
+
+#include "CharacterAnimations.h"
 
 #include "CharacterAnimInstance.h"
 

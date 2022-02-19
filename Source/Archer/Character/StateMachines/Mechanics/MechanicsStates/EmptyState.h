@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿// Copyright (c) Guillem Serra. All Rights Reserved.
+
+#pragma once
 #include "MechanicStateBase.h"
 
 class FEmptyState: public FMechanicStateBase

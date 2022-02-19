@@ -1,4 +1,6 @@
-﻿#include "StateMachineBase.h"
+﻿// Copyright (c) Guillem Serra. All Rights Reserved.
+
+#include "StateMachineBase.h"
 
 #include "Archer/Character/ArcherCharacter.h"
 

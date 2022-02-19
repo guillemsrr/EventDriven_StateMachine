@@ -1,4 +1,6 @@
-﻿#include "MechanicStateBase.h"
+﻿// Copyright (c) Guillem Serra. All Rights Reserved.
+
+#include "MechanicStateBase.h"
 
 #include "Archer/Character/Mechanics/CharacterMechanics.h"
 #include "Archer/Character/StateMachines/Mechanics/MechanicsStateMachine.h"

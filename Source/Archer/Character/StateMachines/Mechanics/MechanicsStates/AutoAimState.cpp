@@ -1,4 +1,6 @@
-﻿#include "AutoAimState.h"
+﻿// Copyright (c) Guillem Serra. All Rights Reserved.
+
+#include "AutoAimState.h"
 
 #include "Archer/Character/Animation/CharacterAnimations.h"
 #include "Archer/Character/Animation/CharacterAnimationStates.h"

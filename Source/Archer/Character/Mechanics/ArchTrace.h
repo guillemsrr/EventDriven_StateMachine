@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿// Copyright (c) Guillem Serra. All Rights Reserved.
+
+#pragma once
+
 #include "Archer/Player/ArcherPlayerController.h"
 #include "ArchTrace.generated.h"
 

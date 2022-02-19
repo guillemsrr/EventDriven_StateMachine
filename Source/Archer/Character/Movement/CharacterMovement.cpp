@@ -1,4 +1,6 @@
-﻿#include "CharacterMovement.h"
+﻿// Copyright (c) Guillem Serra. All Rights Reserved.
+
+#include "CharacterMovement.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Camera/PlayerCameraManager.h"

@@ -1,3 +1,4 @@
+// Copyright (c) Guillem Serra. All Rights Reserved.
 
 #include "ArcherPlayerController.h"
 

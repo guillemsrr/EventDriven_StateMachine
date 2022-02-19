@@ -1,4 +1,6 @@
-﻿#include "AimReadyState.h"
+﻿// Copyright (c) Guillem Serra. All Rights Reserved.
+
+#include "AimReadyState.h"
 
 #include "Archer/Character/Animation/CharacterAnimations.h"
 #include "Archer/Character/StateMachines/Mechanics/MechanicsStateMachine.h"

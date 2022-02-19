@@ -1,4 +1,6 @@
-﻿#include "LocomotionStateBase.h"
+﻿// Copyright (c) Guillem Serra. All Rights Reserved.
+
+#include "LocomotionStateBase.h"
 
 FLocomotionStateBase::FLocomotionStateBase(FStateMachineBase* StateMachine)
 {

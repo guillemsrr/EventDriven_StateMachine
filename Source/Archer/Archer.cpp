@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright (c) Guillem Serra. All Rights Reserved.
 
 #include "Archer.h"
 #include "Modules/ModuleManager.h"

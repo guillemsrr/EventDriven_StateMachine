@@ -1,4 +1,6 @@
-﻿#include "WalkState.h"
+﻿// Copyright (c) Guillem Serra. All Rights Reserved.
+
+#include "WalkState.h"
 #include "Archer/Character/Animation/CharacterAnimations.h"
 #include "Archer/Character/Animation/CharacterAnimationStates.h"
 #include "Archer/Character/Movement/CharacterMovement.h"

@@ -1,4 +1,6 @@
-﻿#include "ClimbState.h"
+﻿// Copyright (c) Guillem Serra. All Rights Reserved.
+
+#include "ClimbState.h"
 
 #include "Archer/Character/Animation/CharacterAnimations.h"
 #include "Archer/Character/Animation/CharacterAnimationStates.h"
