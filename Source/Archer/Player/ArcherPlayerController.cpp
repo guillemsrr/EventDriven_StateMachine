@@ -83,7 +83,6 @@ void AArcherPlayerController::OnPausePressed()
 void AArcherPlayerController::SetPrecisionMode()
 {
 	CurrentGameMode->SetCurrentGameplayMode(AArcherGameMode::Precision);
-	//ArcherCharacter->EnableInput(this);
 	ArcherCharacter->DisableMovement();
 	SlowTimeManager->SetSlowModeTimeDilation();
 	CameraManager->SetPrecisionCameraView();
@@ -94,7 +93,6 @@ void AArcherPlayerController::SetNormalMode()
 	CurrentGameMode->SetCurrentGameplayMode(AArcherGameMode::Normal);
 	ArcherCharacter->EnableInput(this);
 	ArcherCharacter->EnableMovement();
-	//ArcherCharacter->EnableInput(this);
 
 	SlowTimeManager->SetGlobalTimeDilation();
 	CameraManager->SetNormalCameraView();
@@ -104,7 +102,6 @@ void AArcherPlayerController::SetOrbitalMode()
 {
 	CurrentGameMode->SetCurrentGameplayMode(AArcherGameMode::Orbital);
 	ArcherCharacter->DisableMovement();
-	//ArcherCharacter->DisableInput(this);
 	
 	SlowTimeManager->SetSlowModeTimeDilation();
 	CameraManager->SetOrbitalCameraView();

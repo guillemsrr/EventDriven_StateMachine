@@ -25,9 +25,13 @@ public:
 private:
 	AArcherPlayerController();
 
+	UPROPERTY()
 	AArcherGameMode* CurrentGameMode;
+	UPROPERTY()
 	AArcherCharacter* ArcherCharacter;
+	UPROPERTY()
 	AArcherPlayerCameraManager* CameraManager;
+	UPROPERTY()
 	USlowTimeManager* SlowTimeManager;
 
 	bool IsPaused;

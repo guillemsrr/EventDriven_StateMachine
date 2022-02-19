@@ -2,6 +2,9 @@
 
 
 #include "SlowTimeManager.h"
+
+#include "Archer/Utilities/Debug.h"
+
 #include "GameFramework/Actor.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -18,7 +21,7 @@ void USlowTimeManager::AddFreeTicker(UActorComponent* Ticker)
 void USlowTimeManager::SetGlobalTimeDilation()
 {
 	UGameplayStatics::SetGlobalTimeDilation(WorldContext->GetWorld(), NORMAL_TIME_DILATION);
-
+	
 	for (AActor* Actor : TimeFreeActors)
 	{
 		Actor->CustomTimeDilation = NORMAL_TIME_DILATION;
