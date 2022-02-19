@@ -45,6 +45,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	bool bAimOneMinimum = false;
 	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	bool bDebugAimLine = true;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	bool bDebugActualAimLine = true;
+	
 	virtual void BeginPlay() override;
 
 private:
@@ -53,6 +59,7 @@ private:
 	FCollisionQueryParams CollisionQueryParams;
 	FVector AimDirection;
 	FVector TargetAimDirection;
+	float TargetAimDistance;
 	USkeletalMeshSocket const* BowSocket;
 	TArray<AEnemy*> AutoAimTargets;
 	AArcherPlayerController* PlayerController;

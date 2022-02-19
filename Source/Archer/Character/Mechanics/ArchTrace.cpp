@@ -3,9 +3,7 @@
 #include "ArchTrace.h"
 
 #include "DrawDebugHelpers.h"
-#include "Archer/Enemies/Enemy.h" 
-#include "Archer/TimeManagement/SlowTimeManager.h"
-#include "Archer/Utilities/Debug.h"
+#include "Archer/Enemies/Enemy.h"
 #include "Archer/Weapons/Projectile.h"
 
 #include "Engine/SkeletalMeshSocket.h"
@@ -36,8 +34,17 @@ void UArchTrace::SetInterpolatedAimDirection(float DeltaTime)
 	AimDirection = UKismetMathLibrary::VInterpTo(AimDirection, TargetAimDirection, DeltaTime, AimInterpolationSpeed);
 
 	FVector StartPosition = BowSocket->GetSocketLocation(SkeletalMeshComponent);
-	DrawDebugLine(GetWorld(), StartPosition, StartPosition + AimDirection * 1000.0f, FColor::Green, false, 0.01f, 0.f,
-	              10.f);
+	if (bDebugActualAimLine)
+	{
+		DrawDebugLine(GetWorld(),
+		              StartPosition,
+		              StartPosition + AimDirection * TargetAimDistance,
+		              FColor::Green,
+		              false,
+		              0.01f,
+		              0.f,
+		              10.f);
+	}
 }
 
 void UArchTrace::InitializeCollisionTypes()
@@ -76,9 +83,7 @@ void UArchTrace::FreeAim()
 	{
 		return;
 	}
-
-	DrawDebugPoint(GetWorld(), mouseHitResult.Location, 10.f, FColor::Blue);
-
+	
 	FVector StartPosition = BowSocket->GetSocketLocation(SkeletalMeshComponent);
 	float Distance = UKismetMathLibrary::Vector_Distance(mouseHitResult.Location, StartPosition);
 
@@ -86,7 +91,9 @@ void UArchTrace::FreeAim()
 	{
 		return;
 	}
+
 	TargetAimDirection = mouseHitResult.Location - StartPosition;
+	TargetAimDistance = TargetAimDirection.Size();
 	TargetAimDirection.Normalize();
 	FVector end = mouseHitResult.Location + TargetAimDirection * 100;
 	FHitResult hitResult = LineTraceFromStartToEnd(StartPosition, end);
@@ -97,21 +104,25 @@ void UArchTrace::FreeAim()
 
 	FVector hitResultLocation = hitResult.Location;
 	TargetAimDirection = hitResultLocation - StartPosition;
+	TargetAimDistance = TargetAimDirection.Size();
 	TargetAimDirection.Normalize();
-
-	DrawDebugPoint(GetWorld(), hitResult.Location, 10.f, FColor::Green);
-	DrawDebugLine(GetWorld(), StartPosition, hitResultLocation, FColor::Red, false, 0.01f, 0.f, 10.f);
-	DrawDebugLine(GetWorld(), hitResultLocation, hitResultLocation + FVector(0, 0, -10000.f), FColor::Red, false, 0.01f,
-	              0.f, 10.f);
+	
+	if (bDebugAimLine)
+	{
+		DrawDebugLine(GetWorld(), StartPosition, hitResultLocation, FColor::Red, false, 0.01f, 0.f, 10.f);
+	}
 }
 
 void UArchTrace::SetAimDirectionToTargetPosition(const FVector TargetLocation)
 {
 	FVector StartPosition = BowSocket->GetSocketLocation(SkeletalMeshComponent);
 	TargetAimDirection = TargetLocation - StartPosition;
+	TargetAimDistance = TargetAimDirection.Size();
 	TargetAimDirection.Normalize();
-	DrawDebugLine(GetWorld(), StartPosition, TargetLocation, FColor::Red, false, 0.01f, 0.f,
-	              10.f);
+	if (bDebugAimLine)
+	{
+		DrawDebugLine(GetWorld(), StartPosition, TargetLocation, FColor::Red, false, 0.01f, 0.f, 10.f);
+	}
 }
 
 void UArchTrace::SetAimDirection(const AActor* ClosestTarget)
@@ -123,8 +134,7 @@ FVector2D UArchTrace::GetPlayerScreenPosition() const
 {
 	FVector2D PlayerScreenLocation;
 	FVector StartPosition = BowSocket->GetSocketLocation(SkeletalMeshComponent);
-	PlayerController->ProjectWorldLocationToScreen(
-		StartPosition, PlayerScreenLocation, true);
+	PlayerController->ProjectWorldLocationToScreen(StartPosition, PlayerScreenLocation, true);
 
 	return PlayerScreenLocation;
 }
@@ -174,7 +184,7 @@ AActor* UArchTrace::GetGamepadClosestTarget()
 	{
 		for (AEnemy* AutoAimTarget : AutoAimTargets)
 		{
-			if(!AutoAimTarget->IsAlive()) continue;
+			if (!AutoAimTarget->IsAlive()) continue;
 
 			FVector2D TargetScreenLocation = GetActorScreenLocation(AutoAimTarget);
 			float Distance = (PlayerScreenLocation - TargetScreenLocation).Size();
@@ -192,7 +202,10 @@ AActor* UArchTrace::GetGamepadClosestTarget()
 	FVector2D PlayerDirection = StickPosition;
 
 	TArray<AActor*> ClosestTargets = GetClosestTargetInPlayerDirection(PlayerScreenLocation, PlayerDirection);
-	GEngine->AddOnScreenDebugMessage(-1, -1, FColor::Yellow, TEXT("Number targets: " + FString::FromInt(ClosestTargets.Num())));
+	/*GEngine->AddOnScreenDebugMessage(-1,
+	                                 -1,
+	                                 FColor::Yellow,
+	                                 TEXT("Number targets: " + FString::FromInt(ClosestTargets.Num())));*/
 
 	TArray<float> TargetDistances;
 	float MaxDistance = 0;
@@ -210,7 +223,7 @@ AActor* UArchTrace::GetGamepadClosestTarget()
 
 	float ShortestRelativeDistance = TNumericLimits<float>::Max();
 	float StickWeight = StickPosition.Size();
-	
+
 	for (int i = 0; i < ClosestTargets.Num(); i++)
 	{
 		float RelativeDistance = UKismetMathLibrary::Abs(StickWeight - (TargetDistances[i] / MaxDistance));
@@ -227,8 +240,7 @@ AActor* UArchTrace::GetGamepadClosestTarget()
 FVector2D UArchTrace::GetActorScreenLocation(AActor* Target)
 {
 	FVector2D TargetScreenLocation;
-	PlayerController->ProjectWorldLocationToScreen(
-		Target->GetActorLocation(), TargetScreenLocation, true);
+	PlayerController->ProjectWorldLocationToScreen(Target->GetActorLocation(), TargetScreenLocation, true);
 
 	return TargetScreenLocation;
 }
@@ -242,12 +254,12 @@ TArray<AActor*> UArchTrace::GetClosestTargetInPlayerDirection(FVector2D PlayerSc
 	float SmallestAngle = TNumericLimits<float>::Max();
 	for (AEnemy* Target : AutoAimTargets)
 	{
-		if(!Target->IsAlive()) continue;
-		
+		if (!Target->IsAlive()) continue;
+
 		FVector2D TargetScreenLocation = GetActorScreenLocation(Target);
 		FVector2D Direction = TargetScreenLocation - PlayerScreenLocation;
 		Direction.Normalize();
-		
+
 		float AimAtAngle = FMath::RadiansToDegrees(acosf(FVector2D::DotProduct(PlayerDirection, Direction)));
 
 		if (AimAtAngle < MaxAimAngle)
@@ -281,7 +293,9 @@ void UArchTrace::Shoot(TSubclassOf<AProjectile> ProjectileTemplate)
 	SpawnParams.Owner = Owner;
 	SpawnParams.Instigator = Owner->GetInstigator();
 
-	AProjectile* Projectile = World->SpawnActor<AProjectile>(ProjectileTemplate, ProjectileLocation, ProjectileRotation,
+	AProjectile* Projectile = World->SpawnActor<AProjectile>(ProjectileTemplate,
+	                                                         ProjectileLocation,
+	                                                         ProjectileRotation,
 	                                                         SpawnParams);
 	if (Projectile)
 	{
@@ -293,13 +307,7 @@ FHitResult UArchTrace::LineTraceFromStartToEnd(FVector start, FVector end) const
 {
 	FHitResult hitResult;
 
-	GetWorld()->LineTraceSingleByObjectType(
-		hitResult,
-		start,
-		end,
-		CollisionObjectQueryParams,
-		CollisionQueryParams
-	);
+	GetWorld()->LineTraceSingleByObjectType(hitResult, start, end, CollisionObjectQueryParams, CollisionQueryParams);
 
 	return hitResult;
 }
