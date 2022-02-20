@@ -15,6 +15,7 @@ class ARCHER_API AOrbitalCameraActor : public AArcherCameraActorBase
 
 public:
 	void SetPivotPoint(USceneComponent* PivotPoint);
+	virtual void RotateCameraLeftRight(float Value) override;
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
@@ -24,7 +25,6 @@ protected:
 	float Zoom = 1000.f;
 	
 	virtual void BeginPlay() override;
-	virtual void RotateCameraLeftRight(float Value) override;
 	virtual void RotateCameraUpDown(float Value) override;
 	virtual void SetupPlayerInputComponent() override;
 	void CorrectRollRotation();

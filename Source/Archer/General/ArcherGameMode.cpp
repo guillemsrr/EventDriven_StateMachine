@@ -26,7 +26,6 @@ void AArcherGameMode::BeforeStartPlay()
 
 void AArcherGameMode::AfterStartPlay()
 {
-	AArcherPlayerController* PlayerController = Cast<AArcherPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-
+	PlayerController = Cast<AArcherPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	PlayerController->Initialize();
 }

@@ -48,6 +48,16 @@ void AArcherPlayerCameraManager::SetNormalCameraView()
 	SetCurrentCamera(OrbitalCamera);
 }
 
+void AArcherPlayerCameraManager::RotateLeft()
+{
+	OrbitalCamera->RotateCameraLeftRight(-90.f);
+}
+
+void AArcherPlayerCameraManager::RotateRight()
+{
+	OrbitalCamera->RotateCameraLeftRight(90.f);
+}
+
 void AArcherPlayerCameraManager::EnableCurrentCameraInput()
 {
 	CurrentCamera->EnableInput(GetOwningPlayerController());

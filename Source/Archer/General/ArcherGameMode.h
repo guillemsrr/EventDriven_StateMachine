@@ -30,6 +30,10 @@ protected:
 	void BeforeStartPlay();
 	virtual void StartPlay() override;
 	void AfterStartPlay();
+
+private:
+	UPROPERTY()
+	class AArcherPlayerController* PlayerController;
 };
 
 

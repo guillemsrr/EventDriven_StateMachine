@@ -21,6 +21,8 @@ public:
 	bool IsPlayerUsingGamepad;
 	
 	void Initialize();
+	virtual void PreInitializeComponents() override;
+	virtual void PostInitializeComponents() override;
 
 private:
 	AArcherPlayerController();
@@ -33,10 +35,11 @@ private:
 	AArcherPlayerCameraManager* CameraManager;
 	UPROPERTY()
 	USlowTimeManager* SlowTimeManager;
-
-	bool IsPaused;
 	
-	virtual void BeginPlay() override;
+	bool bIsPaused;
+	
+	FInputModeGameAndUI InputMode;
+	
 	virtual void SetupInputComponent() override;
 	virtual void InitInputSystem() override;
 	

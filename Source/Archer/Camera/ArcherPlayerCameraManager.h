@@ -32,6 +32,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetOrbitalCameraPivotPoint(USceneComponent* PivotPoint){OrbitalCamera->SetPivotPoint(PivotPoint);}
 
+	void RotateLeft();
+	void RotateRight();
+
 private:
 	UPROPERTY()
 	AOrbitalCameraActor* OrbitalCamera;
