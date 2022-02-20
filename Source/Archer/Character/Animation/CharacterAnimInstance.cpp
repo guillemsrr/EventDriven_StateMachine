@@ -101,7 +101,7 @@ void UCharacterAnimInstance::UpdateAnimationProperties(float deltaTime)
 		AimRotation = Character->GetAimRotator();
 		FRotator SocketRot = socket->GetSocketTransform(Character->GetMesh()).Rotator(); 
 
-		GEngine->AddOnScreenDebugMessage(-1, -1, FColor::White, TEXT("AimRotation: " + AimRotation.ToString()));
+		//GEngine->AddOnScreenDebugMessage(-1, -1, FColor::White, TEXT("AimRotation: " + AimRotation.ToString()));
 
 		MovementOffsetYaw = Character->GetAimRotationRelativeToMovement().Yaw;
 		Pitch = AimRotation.Pitch;
