@@ -17,11 +17,13 @@ public:
 
 	void SetInterpolatedAimDirection(float DeltaTime);
 	void SetBowSocket(USkeletalMeshComponent* skeletalMeshComponent);
-	void FreeAim();
 	void SetAimDirection(const AActor* ClosestTarget);
 	void SetAimDirectionToTargetPosition(const FVector TargetLocation);
 	void Shoot(TSubclassOf<class AProjectile> Projectile);
 	void GetMouseLocationAndDirection(FVector& WorldLocation, FVector& WorldDirection);
+	void FreeAimGamepad();
+	void FreeAimMouse();
+	
 	AActor* GetMouseClosestTarget();
 	AActor* GetGamepadClosestTarget();
 	FVector2D GetActorScreenLocation(AActor* Target);
@@ -50,10 +52,15 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	bool bDebugActualAimLine = true;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float GamepadFreeAimSpeed = 10.f;
 	
 	virtual void BeginPlay() override;
 
 private:
+	const float MIN_AIM_DISTANCE = 200.f;
+	
 	AActor* Owner;
 	FCollisionObjectQueryParams CollisionObjectQueryParams;
 	FCollisionQueryParams CollisionQueryParams;
@@ -63,6 +70,7 @@ private:
 	USkeletalMeshSocket const* BowSocket;
 	TArray<AEnemy*> AutoAimTargets;
 	AArcherPlayerController* PlayerController;
+	FVector2D FreeAimGamepadCursor;
 	
 	FHitResult LineTraceFromStartToEnd(FVector start, FVector end) const;
 	void InitializeCollisionTypes();
@@ -70,4 +78,5 @@ private:
 	FVector2D GetPlayerScreenPosition() const;
 	void GetPlayerStickPositionAndDirection(float& PlayerScreenLocation, FVector2D& PlayerDirection);
 	TArray<AActor*> GetClosestTargetInPlayerDirection(FVector2D PlayerScreenLocation, FVector2D PlayerDirection);
+	void FreeAim(const FHitResult& Hit);
 };

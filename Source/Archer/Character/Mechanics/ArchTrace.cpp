@@ -4,6 +4,7 @@
 
 #include "DrawDebugHelpers.h"
 #include "Archer/Enemies/Enemy.h"
+#include "Archer/Utilities/Debug.h"
 #include "Archer/Weapons/Projectile.h"
 
 #include "Engine/SkeletalMeshSocket.h"
@@ -26,7 +27,10 @@ void UArchTrace::BeginPlay()
 
 	PlayerController = static_cast<AArcherPlayerController*>(UGameplayStatics::GetPlayerController(this, 0));
 
+	//TODO Could the class get the socket reference in the inspector?
 	//SetBowSocket();
+
+	FreeAimGamepadCursor = FVector2D(1100, 600);
 }
 
 void UArchTrace::SetInterpolatedAimDirection(float DeltaTime)
@@ -71,45 +75,72 @@ void UArchTrace::GetMouseLocationAndDirection(FVector& WorldLocation, FVector& W
 	PlayerController->DeprojectMousePositionToWorld(WorldLocation, WorldDirection);
 }
 
-//TODO -> use PlayerController's GetHitUnderCursor ?¿
-void UArchTrace::FreeAim()
+void UArchTrace::FreeAimGamepad()
 {
-	FVector WorldLocation;
-	FVector WorldDirection;
-	GetMouseLocationAndDirection(WorldLocation, WorldDirection);
+	float StickX;
+	float StickY;
+	PlayerController->GetInputAnalogStickState(EControllerAnalogStick::CAS_RightStick, StickX, StickY);
+	FVector2D StickPosition = FVector2D(StickX, StickY);
+	
+	FreeAimGamepadCursor += StickPosition*GamepadFreeAimSpeed;
+	FVector Location;
+	FVector Direction;
+	PlayerController->DeprojectScreenPositionToWorld(FreeAimGamepadCursor.X, FreeAimGamepadCursor.Y, Location, Direction);
+	Direction.Normalize();
+	Location +=Direction*10.f;
+	DrawDebugPoint(GetWorld(), Location, 20.f, FColor::Red);
+	
+	FHitResult HitResult;
+	PlayerController->GetHitResultAtScreenPosition(FreeAimGamepadCursor,
+	                                               ECC_PhysicsBody,
+	                                               CollisionQueryParams,
+	                                               HitResult);
 
-	FHitResult mouseHitResult = LineTraceFromStartToEnd(WorldLocation, WorldLocation + WorldDirection * 10000);
-	if (!mouseHitResult.IsValidBlockingHit())
+	FreeAim(HitResult);
+}
+
+void UArchTrace::FreeAimMouse()
+{
+	FHitResult MouseHitResult;
+	PlayerController->GetHitResultUnderCursor(ECC_PhysicsBody, false, MouseHitResult);
+
+	FreeAim(MouseHitResult);
+}
+
+void UArchTrace::FreeAim(const FHitResult& Hit)
+{
+	if (!Hit.IsValidBlockingHit())
 	{
 		return;
 	}
-	
+
+	FVector HitLocation = Hit.Location;
 	FVector StartPosition = BowSocket->GetSocketLocation(SkeletalMeshComponent);
-	float Distance = UKismetMathLibrary::Vector_Distance(mouseHitResult.Location, StartPosition);
+	float Distance = UKismetMathLibrary::Vector_Distance(HitLocation, StartPosition);
 
-	if (Distance < 200.f)
+	if (Distance < MIN_AIM_DISTANCE)
 	{
 		return;
 	}
 
-	TargetAimDirection = mouseHitResult.Location - StartPosition;
+	TargetAimDirection = HitLocation - StartPosition;
 	TargetAimDistance = TargetAimDirection.Size();
 	TargetAimDirection.Normalize();
-	FVector end = mouseHitResult.Location + TargetAimDirection * 100;
-	FHitResult hitResult = LineTraceFromStartToEnd(StartPosition, end);
-	if (!hitResult.IsValidBlockingHit())
+	FVector End = HitLocation + TargetAimDirection * 100;
+	FHitResult HitResult = LineTraceFromStartToEnd(StartPosition, End);
+	if (!HitResult.IsValidBlockingHit())
 	{
 		return;
 	}
 
-	FVector hitResultLocation = hitResult.Location;
-	TargetAimDirection = hitResultLocation - StartPosition;
+	FVector HitResultLocation = HitResult.Location;
+	TargetAimDirection = HitResultLocation - StartPosition;
 	TargetAimDistance = TargetAimDirection.Size();
 	TargetAimDirection.Normalize();
-	
+
 	if (bDebugAimLine)
 	{
-		DrawDebugLine(GetWorld(), StartPosition, hitResultLocation, FColor::Red, false, 0.01f, 0.f, 10.f);
+		DrawDebugLine(GetWorld(), StartPosition, HitResultLocation, FColor::Red, false, 0.01f, 0.f, 10.f);
 	}
 }
 
@@ -202,11 +233,6 @@ AActor* UArchTrace::GetGamepadClosestTarget()
 	FVector2D PlayerDirection = StickPosition;
 
 	TArray<AActor*> ClosestTargets = GetClosestTargetInPlayerDirection(PlayerScreenLocation, PlayerDirection);
-	/*GEngine->AddOnScreenDebugMessage(-1,
-	                                 -1,
-	                                 FColor::Yellow,
-	                                 TEXT("Number targets: " + FString::FromInt(ClosestTargets.Num())));*/
-
 	TArray<float> TargetDistances;
 	float MaxDistance = 0;
 

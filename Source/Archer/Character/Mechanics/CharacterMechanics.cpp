@@ -33,12 +33,12 @@ void FCharacterMechanics::AutoAimGamepad()
 
 void FCharacterMechanics::FreeAim() const
 {
-	ArchTrace->FreeAim();
+	ArchTrace->FreeAimMouse();
 }
 
 void FCharacterMechanics::FreeAimGamepad() const
 {
-	ArchTrace->FreeAim();
+	ArchTrace->FreeAimGamepad();
 }
 
 void FCharacterMechanics::PrecisionAim(const FVector TargetLocation) const
