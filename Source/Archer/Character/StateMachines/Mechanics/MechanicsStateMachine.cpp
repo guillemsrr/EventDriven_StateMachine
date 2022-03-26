@@ -22,31 +22,26 @@ void FMechanicsStateMachine::Tick(float DeltaTime)
 void FMechanicsStateMachine::SetEmptyState()
 {
 	SetState<FEmptyState>();
-	SetSpecificState();
 }
 
 void FMechanicsStateMachine::SetAimReadyState()
 {
 	SetState<FAimReadyState>();
-	SetSpecificState();
 }
 
 void FMechanicsStateMachine::SetFreeAimState()
 {
 	SetState<FFreeAimState>();
-	SetSpecificState();
 }
 
 void FMechanicsStateMachine::SetAutoAimState()
 {
 	SetState<FAutoAimState>();
-	SetSpecificState();
 }
 
 void FMechanicsStateMachine::SetPrecisionAimState()
 {
 	SetState<FPrecisionAimState>();
-	SetSpecificState();
 }
 
 void FMechanicsStateMachine::SetSpecificState()
