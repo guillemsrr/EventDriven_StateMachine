@@ -4,9 +4,7 @@
 
 #include "DrawDebugHelpers.h"
 #include "Archer/Enemies/Enemy.h"
-#include "Archer/Utilities/Debug.h"
 #include "Archer/Weapons/Projectile.h"
-
 #include "Engine/SkeletalMeshSocket.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -37,7 +35,7 @@ void UArchTrace::SetInterpolatedAimDirection(float DeltaTime)
 {
 	AimDirection = UKismetMathLibrary::VInterpTo(AimDirection, TargetAimDirection, DeltaTime, AimInterpolationSpeed);
 
-	FVector StartPosition = BowSocket->GetSocketLocation(SkeletalMeshComponent);
+	FVector StartPosition = GetSocketPosition();
 	if (bDebugActualAimLine)
 	{
 		DrawDebugLine(GetWorld(),
@@ -49,6 +47,11 @@ void UArchTrace::SetInterpolatedAimDirection(float DeltaTime)
 		              0.f,
 		              10.f);
 	}
+}
+
+FVector UArchTrace::GetSocketPosition() const
+{
+	return BowSocket?BowSocket->GetSocketLocation(SkeletalMeshComponent):GetOwner()->GetActorLocation();
 }
 
 void UArchTrace::InitializeCollisionTypes()
@@ -67,7 +70,10 @@ void UArchTrace::InitializeCollisionTypes()
 void UArchTrace::SetBowSocket(USkeletalMeshComponent* skeletalMeshComponent)
 {
 	this->SkeletalMeshComponent = skeletalMeshComponent;
-	BowSocket = SkeletalMeshComponent->GetSocketByName(BowSocketName);
+	if(SkeletalMeshComponent)
+	{
+		BowSocket = SkeletalMeshComponent->GetSocketByName(BowSocketName);
+	}
 }
 
 void UArchTrace::GetMouseLocationAndDirection(FVector& WorldLocation, FVector& WorldDirection)
@@ -115,7 +121,7 @@ void UArchTrace::FreeAim(const FHitResult& Hit)
 	}
 
 	FVector HitLocation = Hit.Location;
-	FVector StartPosition = BowSocket->GetSocketLocation(SkeletalMeshComponent);
+	FVector StartPosition = GetSocketPosition();
 	float Distance = UKismetMathLibrary::Vector_Distance(HitLocation, StartPosition);
 
 	if (Distance < MIN_AIM_DISTANCE)
@@ -146,7 +152,7 @@ void UArchTrace::FreeAim(const FHitResult& Hit)
 
 void UArchTrace::SetAimDirectionToTargetPosition(const FVector TargetLocation)
 {
-	FVector StartPosition = BowSocket->GetSocketLocation(SkeletalMeshComponent);
+	FVector StartPosition = GetSocketPosition();
 	TargetAimDirection = TargetLocation - StartPosition;
 	TargetAimDistance = TargetAimDirection.Size();
 	TargetAimDirection.Normalize();
@@ -164,7 +170,7 @@ void UArchTrace::SetAimDirection(const AActor* ClosestTarget)
 FVector2D UArchTrace::GetPlayerScreenPosition() const
 {
 	FVector2D PlayerScreenLocation;
-	FVector StartPosition = BowSocket->GetSocketLocation(SkeletalMeshComponent);
+	FVector StartPosition = GetSocketPosition();
 	PlayerController->ProjectWorldLocationToScreen(StartPosition, PlayerScreenLocation, true);
 
 	return PlayerScreenLocation;
@@ -310,7 +316,7 @@ TArray<AActor*> UArchTrace::GetClosestTargetInPlayerDirection(FVector2D PlayerSc
 void UArchTrace::Shoot(TSubclassOf<AProjectile> ProjectileTemplate)
 {
 	FRotator ProjectileRotation = TargetAimDirection.Rotation();
-	FVector ProjectileLocation = BowSocket->GetSocketLocation(SkeletalMeshComponent) + TargetAimDirection * 10.f;
+	FVector ProjectileLocation = GetSocketPosition() + TargetAimDirection * 10.f;
 
 	UWorld* World = GetWorld();
 	if (!World) return;
