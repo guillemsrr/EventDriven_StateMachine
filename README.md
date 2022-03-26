@@ -6,32 +6,32 @@ This is the current state of a WIP side-project I've been making. As the title s
 
 ## Project
 
-if you clone the project you'll notice there are no 3D assets, and the characters are just cubes. You may download your own, with their animations, and replace them.
+If you clone the project you'll notice there are no 3D assets, and the characters are just cubes. You may download your own, with their animations, and replace them.
 For my prototype I'm using [Paragon Sparrow](https://www.unrealengine.com/marketplace/en-US/product/paragon-sparrow) as the character, and the enemies are from [Infinity Blade's Aversaries](https://www.unrealengine.com/marketplace/en-US/product/infinity-blade-enemies)
 
-A part from the character animations assets, you'll need to create your own Blueprint Animation Instance, as in `"UCharacterAnimInstance"`
+A part from the character animations assets, you'll need to create your own Blueprint Animation Instance, as in `UCharacterAnimInstance`
 
 
 ## Features
 
-* `"ArcherPlayerController"` Handling the game states, and the camera inputs.
-* `"ArcherPlayerCameraManager"` Camera rotations and current view.
-* `"ArcherCharacter"`Contains the movement, mechanics and state-machines for the character.
-* `"SlowTimeManager"`Slows global time, with exceptions.
-* `"Enemy"`Handled via a basic AI, these will just find and go to the player location, and die when hit with a projectile.
-* `"InteractiveElement"`A very simple "puzzle" system, used in the Demo level.
-* [StateMachineBase](Docs/Statemachine.md) The most interesting element in my opinion. Handling the different character states.
+* `ArcherPlayerController` Handling the game states, and the camera inputs.
+* `ArcherPlayerCameraManager` Camera rotations and current view.
+* `ArcherCharacter`Contains the movement, mechanics and state-machines for the character.
+* `SlowTimeManager`Slows global time, with exceptions.
+* `Enemy`Handled via a basic AI, these will just find and go to the player location, and die when hit with a projectile.
+* `InteractiveElement`A very simple "puzzle" system, used in the Demo level.
+* [StateMachineBase](Docs/StateMachine.md) The most interesting element in my opinion. Handling the different character states.
 
 
 ## Mechanics
-*Look for all actual inputs inside `"Edit -> Project Settings -> Input"`
+*Look for all actual inputs inside `Edit -> Project Settings -> Input`*
 
 The player is able to:
 * Walk/Sprint/Jump
 * AutoAim/FreeAim + Shoot
 * Set "OrbitMode" and Rotate Camera
 
-When free-aiming, the character follows the player's pointer (mouse/gamepad). Otherwise, on auto-aim, `"ArchTrace"` will try to find the smallest angle (enemy - character - pointer) on screen location.
+When free-aiming, the character follows the player's pointer (mouse/gamepad). Otherwise, on auto-aim, `ArchTrace` will try to find the smallest angle (enemy - character - pointer) on screen location.
 <p align="center"><img alt="character_animation" src="Images/character_animation.gif"></p>
 
 The enemies approaching the player and getting killed via free-aim and auto-aim.
@@ -43,40 +43,40 @@ Of course, with the same angle-aim, it also computes the closest position to eit
 And this can also be applied with aligned enemies:
 <p align="center"><img alt="aligned_enemies" src="Images/aligned_enemies.gif"></p>
 
-Finally, interacting with the level elements and rotating the camera:
+Finally, interacting with the level elements and rotating the camera (gameplay with gamepad)
 <p align="center"><img alt="demo" src="Images/demo_1.gif"></p>
 
 
-### State Machine
+### StateMachine
 
-I've programmed two state machines: `"LocomotionStateMachine"` and `"MechanicsStateMachine"`, they both derive from  `"StateMachineBase"`.
+I've programmed two state machines: `LocomotionStateMachine` and `MechanicsStateMachine`, they both derive from  `StateMachineBase`.
 With two separated state machines, we can easily allow the character to perform different mechanics with different locomotions, and viceversa.
 
 All states derive from `StateBase` (that class could be an interface). As you'll see, there are many that are just not implemented.
 These states just need to override Begin() and End() methods.
 
-`"StateMachineBase.h"`will set the state as follows:
+`StateMachineBase.h`will set the state as follows:
 ```cpp
-	template <class T>
-	void SetState()
-	{
-		State->End();
-		delete State;
-		State = new T(this);
-		State->Begin();
-		SetSpecificState();
-	}
+template <class T>
+void SetState()
+{
+	State->End();
+	delete State;
+	State = new T(this);
+	State->Begin();
+	SetSpecificState();
+}
 ```
 It End()s and deletes the last state, and creates and Begin()s the new one. In case each state machine needs its specific state reference, it also calls the virtual method for it.
 
-All movements and actions are called via these two delegates, declared in `"StateMachineBase.h"`
+All movements and actions are called via these two delegates, declared in `StateMachineBase.h`
 ```cpp
 DECLARE_MULTICAST_DELEGATE_OneParam(MovementSignature, float);
 DECLARE_MULTICAST_DELEGATE(ActionSignature);ate();
 ```
 
 That way, we loose coupling between classes and separate business logic with calling; the specific code is atomized in other classes so that the state itself just binds the appropriate logic to different delegates.
-Let's look at a specific example: `"WalkState.cpp"`
+Let's look at a specific example: `WalkState.cpp`
 ```cpp
 void FWalkState::Begin()
 {
@@ -106,4 +106,3 @@ void FWalkState::End()
 	StateMachine->GetMechanicsStateMachine()->StopAimingDelegate.Clear();
 }
 ```
-
