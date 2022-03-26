@@ -51,7 +51,7 @@ void UArchTrace::SetInterpolatedAimDirection(float DeltaTime)
 
 FVector UArchTrace::GetSocketPosition() const
 {
-	return BowSocket?BowSocket->GetSocketLocation(SkeletalMeshComponent):GetOwner()->GetActorLocation();
+	return BowSocket?BowSocket->GetSocketLocation(SkeletalMeshComponent):GetOwner()->GetActorLocation() + TargetAimDirection*10.f;
 }
 
 void UArchTrace::InitializeCollisionTypes()
