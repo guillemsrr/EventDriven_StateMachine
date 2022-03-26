@@ -73,6 +73,5 @@ Plugins/*/Intermediate/*
 # Cache files for the editor to use
 DerivedDataCache/*
 
-#Images
-Images/*
+# Large assets
 Content/ParagonSparrow
