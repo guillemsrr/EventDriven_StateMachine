@@ -6,7 +6,9 @@
 #include "GameFramework/Character.h"
 #include "CharacterBase.generated.h"
 
-UCLASS(Abstract) //HideCategories = (Actor, Replication, Mobile, Input, LOD, Cooking, Rendering, Character, Camera)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCharacterDeadSignature);
+
+UCLASS(Abstract)
 class ARCHER_API ACharacterBase : public ACharacter //APawn
 {
 	GENERATED_BODY()
@@ -21,10 +23,15 @@ public:
 
 	virtual void Hit();
 	
+	UPROPERTY(BlueprintAssignable)
+	FCharacterDeadSignature OnCharacterDead;
+	
 protected:
+
 	int Health;
 	
 	virtual void BeginPlay() override;
+	virtual void Die();
 
 private:
 	const int MAX_HEALTH = 1;

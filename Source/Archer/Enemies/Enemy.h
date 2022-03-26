@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Archer/Character/CharacterBase.h"
-#include "GameFramework/Character.h"
 #include "Enemy.generated.h"
 
 UCLASS()
@@ -17,12 +16,9 @@ public:
 	
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void Hit() override;
-	
 protected:
 	virtual void BeginPlay() override;
 
 private:
-	void Die();
-
+	virtual void Die() override;
 };

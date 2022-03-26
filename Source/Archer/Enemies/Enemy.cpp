@@ -22,22 +22,14 @@ void AEnemy::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void AEnemy::Hit()
-{
-	Super::Hit();
-
-	if(!IsAlive())
-	{
-		Die();
-	}
-}
-
 void AEnemy::Die()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	Super::Die();
 	
-	GetCapsuleComponent()->SetGenerateOverlapEvents(false);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
-	Controller->UnPossess();
+	if(Controller)
+	{
+		Controller->UnPossess();
+	}
 }
 

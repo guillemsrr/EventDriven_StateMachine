@@ -2,6 +2,8 @@
 
 #include "CharacterBase.h"
 
+#include "Components/CapsuleComponent.h"
+
 ACharacterBase::ACharacterBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -28,5 +30,17 @@ bool ACharacterBase::IsAlive() const
 void ACharacterBase::Hit()
 {
 	Health--;
+	
+	if(!IsAlive())
+	{
+		Die();
+	}
+}
+
+void ACharacterBase::Die()
+{
+	OnCharacterDead.Broadcast();
+	PrimaryActorTick.bCanEverTick = false;
+	GetCapsuleComponent()->SetGenerateOverlapEvents(false);
 }
 
