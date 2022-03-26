@@ -6,6 +6,7 @@
 #include "Archer/Character/Animation/CharacterAnimationStates.h"
 #include "Archer/Character/Mechanics/CharacterMechanics.h"
 #include "Archer/Character/StateMachines/Mechanics/MechanicsStateMachine.h"
+#include "Archer/Utilities/Debug.h"
 
 void FFreeAimState::Begin()
 {
@@ -41,7 +42,7 @@ void FFreeAimState::Tick(float DeltaTime)
 {
 	TickDelegate.Broadcast();
 	CharacterMechanics->InterpolateAimDirection(DeltaTime);
-	GEngine->AddOnScreenDebugMessage(0, -1, FColor::Green, "Free Aim");
+	DEBUG_LOG_TICK("Free Aim");
 }
 
 void FFreeAimState::DrawArrowAndStartPrecisionCount()

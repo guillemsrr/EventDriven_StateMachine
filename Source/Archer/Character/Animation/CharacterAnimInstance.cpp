@@ -9,6 +9,7 @@
 
 #include "GameFramework/CharacterMovementComponent.h"
 
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
 UCharacterAnimInstance::UCharacterAnimInstance()
@@ -62,7 +63,7 @@ void UCharacterAnimInstance::UpdateAnimationProperties(float deltaTime)
 	{
 		return;
 	}
-	
+
 	DeltaTime = deltaTime;
 
 	FVector Velocity = Character->GetVelocity();
@@ -70,7 +71,7 @@ void UCharacterAnimInstance::UpdateAnimationProperties(float deltaTime)
 	Speed = Velocity.Size();
 	IsMoving = Speed != 0.f;
 
-	switch (AttackState)
+	/*switch (AttackState)
 	{
 	case ECharacterAttackState::Aiming:
 		DEBUG_LOG_TICK("Aiming");
@@ -87,7 +88,7 @@ void UCharacterAnimInstance::UpdateAnimationProperties(float deltaTime)
 	case ECharacterAttackState::NotAiming:
 		DEBUG_LOG_TICK("Not Aiming");
 		break;
-	}
+	}*/
 
 	if(OrientationType == EOrientationType::AimDirection)
 	{
