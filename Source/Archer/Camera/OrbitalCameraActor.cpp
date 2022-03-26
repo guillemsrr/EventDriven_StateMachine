@@ -73,7 +73,6 @@ void AOrbitalCameraActor::RotateCameraUpDown(float Value)
 	Rotation.Pitch -= Value * RotationSpeed;
 	SetActorRelativeRotation(Rotation);
 	CorrectRollRotation();
-	//LookAtRoot();
 }
 
 void AOrbitalCameraActor::RotateCameraLeftRight(float Value)
@@ -88,5 +87,4 @@ void AOrbitalCameraActor::RotateCameraLeftRight(float Value)
 	SetActorRelativeRotation(Rotation);
 
 	CorrectRollRotation();
-	//LookAtRoot();
 }
